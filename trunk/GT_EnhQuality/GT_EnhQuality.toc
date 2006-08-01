@@ -1,0 +1,7 @@
+## Interface: 11100
+## Title: Grim Times: EnhQuality
+## Version: 11100-1
+## Notes: Adds item quality to EnhTooltip.
+## RequiredDeps: EnhTooltip, Stubby
+
+GT_EnhQuality.lua

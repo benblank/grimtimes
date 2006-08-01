@@ -1,0 +1,8 @@
+## Interface: 11100
+## Title: Grim Times: Bartender
+## Version: 11100-1
+## Notes: Range coloring and art options for the Action Bar.
+## SavedVariables: GT_Bartender_Config
+## RequiredDeps: GT_Core
+
+GT_Bartender.lua

@@ -1,0 +1,11 @@
+## Interface: 11100
+## Title: Grim Times: Titan AltXP
+## Author: Birne
+## Version: 11100-1
+## Notes: Adds current XP, rest XP, and/or remaining XP (to level) to Titan Panel.
+## RequiredDeps: Titan
+## SavedVariables: GT_TitanAltXP_Config
+
+#GT_TitanAltXP.enUS.lua
+GT_TitanAltXP.lua
+GT_TitanAltXP.xml
