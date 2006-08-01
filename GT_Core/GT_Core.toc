@@ -1,0 +1,13 @@
+## Interface: 11100
+## Title: Grim Times: Core
+## Author: Birne @ Draenor
+## Version: 11100-1
+## Notes: Core functions required by all Grim Times addons.
+## SavedVariables: GT_Output_Config
+
+GT_Output.lua
+GT_Output.enUS.lua
+
+GT_Event.lua
+GT_Event.xml
+GT_Event.enUS.lua

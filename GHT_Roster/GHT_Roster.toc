@@ -1,0 +1,8 @@
+## Interface: 11100
+## Title: GHT Roster
+## Author: Birne (http://www.grimhorn.org/)
+## Version: 11100-1
+## Notes: Stores information on guild members each time the guild pane is opened.
+## SavedVariables: GHT_Roster
+## DefaultState: enabled
+GHT_Roster.xml

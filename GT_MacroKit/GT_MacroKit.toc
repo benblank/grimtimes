@@ -1,0 +1,8 @@
+## Interface: 11100
+## Title: Grim Times: MacroKit
+## Version: 11100-1
+## Notes: Provides a number of useful functions for macro writers.
+## RequiredDeps: GT_Core
+
+GT_MacroKit.xml
+GT_MacroKit.lua

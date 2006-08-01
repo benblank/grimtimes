@@ -1,0 +1,8 @@
+<Bindings>
+	<Binding name="GTCSSHOOT" header="GRIMTIMES">
+		GT_ClearShot.Prep()
+	</Binding>
+	<Binding name="GTCSFIX" header="GRIMTIMES">
+		GT_ClearShot.All(GT_ClearShot.Restore)
+	</Binding>
+</Bindings>

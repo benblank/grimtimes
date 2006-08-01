@@ -1,0 +1,17 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ../../FrameXML/UI.xsd">
+	<Frame name="GT_TitanAltXP_ContainerFrame" parent="UIParent">
+		<Frames>
+			<Button name="TitanPanelGrimAltExpButton" inherits="TitanPanelComboTemplate" frameStrata="FULLSCREEN" toplevel="true">
+				<Scripts>
+					<OnLoad>
+						GT_TitanAltXP_OnLoad();
+						TitanPanelButton_OnLoad();
+					</OnLoad>
+					<OnEvent>
+						GT_TitanAltXP_OnEvent();
+					</OnEvent>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+</Ui>
