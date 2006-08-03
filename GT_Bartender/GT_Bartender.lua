@@ -24,35 +24,24 @@ GT_Bartender_Config = {
 
 GT_Bartender = {
 	ActionOnUpdate = nil,
-	ActionUpdateUsable = nil,
 
 	ButtonUpdate = function(elapsed)
 		if GT_Bartender.ActionOnUpdate ~= nil then
 			GT_Bartender.ActionOnUpdate(elapsed)
 		end
 
-		if this.rangeTimer and this.rangeTimer <= elapsed then
-			if IsActionInRange(ActionButton_GetPagedID(this)) == 0 then
-				this.inRange = 0
-			else
-				this.inRange = 1
-			end
-			GT_Bartender.ButtonUpdateUsable()
-		end
-	end,
-
-	ButtonUpdateUsable = function()
-		if GT_Bartender.ActionUpdateUsable ~= nil then
-			GT_Bartender.ActionUpdateUsable()
-		end
-
-		local icon = getglobal(this:GetName() .. "Icon")
-		local normalTexture = getglobal(this:GetName() .. "NormalTexture")
 		local isUsable, notEnoughMana = IsUsableAction(ActionButton_GetPagedID(this))
 
-		if isUsable and this.inRange and this.inRange == 0 then
-			icon:SetVertexColor(1.0, 0.5, 0.5)
-			normalTexture:SetVertexColor(1.0, 0.5, 0.5)
+		if this.rangeTimer and this.rangeTimer <= elapsed then
+			if isUsable and not notEnoughMana then
+				if IsActionInRange(ActionButton_GetPagedID(this)) == 0 then
+					getglobal(this:GetName() .. "Icon"):SetVertexColor(1.0, 0.5, 0.5)
+					getglobal(this:GetName() .. "NormalTexture"):SetVertexColor(1.0, 0.5, 0.5)
+				else
+					getglobal(this:GetName() .. "Icon"):SetVertexColor(1.0, 1.0, 1.0)
+					getglobal(this:GetName() .. "NormalTexture"):SetVertexColor(1.0, 1,0, 1.0)
+				end
+			end
 		end
 	end,
 
@@ -70,15 +59,12 @@ GT_Bartender = {
 
 	OnLoad = function()
 		if (Sea and Sea.util and Sea.util.hook) then
-			-- Use the hooking routines from Sea, if available, to avoid conflicts.
-			Sea.util.hook("ActionButton_OnUpdate",     "GT_Bartender.ButtonUpdate",       "after")
-			Sea.util.hook("ActionButton_UpdateUsable", "GT_Bartender.ButtonUpdateUsable", "after")
+			-- Use the hooking routine from Sea, if available, to avoid conflicts.
+			Sea.util.hook("ActionButton_OnUpdate", "GT_Bartender.ButtonUpdate", "after")
 		else
 			-- Otherwise, bruteforce it.
-			GT_Bartender.ActionOnUpdate     = ActionButton_OnUpdate
-			GT_Bartender.ActionUpdateUsable = ActionButton_UpdateUsable
-			ActionButton_OnUpdate           = GT_Bartender.ButtonUpdate
-			ActionButton_UpdateUsable       = GT_Bartender.ButtonUpdateUsable
+			GT_Bartender.ActionOnUpdate = ActionButton_OnUpdate
+			ActionButton_OnUpdate       = GT_Bartender.ButtonUpdate
 		end
 
 		GT_Bartender.FrameDisplay("MainMenuBarLeftEndCap",  not GT_Bartender_Config.remove_art_left)
