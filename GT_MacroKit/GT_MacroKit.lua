@@ -1,3 +1,8 @@
+-- $LastChangedBy$
+-- $LastChangedRevision$
+-- $LastChangedDate$
+-- $HeadURL$
+
 function hasKey(haystack, needle)
 	table.foreach(haystack, function(key, value)
 		if key == needle then return true end

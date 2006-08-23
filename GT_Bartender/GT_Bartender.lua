@@ -1,3 +1,8 @@
+-- $LastChangedBy$
+-- $LastChangedRevision$
+-- $LastChangedDate$
+-- $HeadURL$
+
 if GT_Config == nil then GT_Config = {} end
 
 GT_Bartender_MCom = {

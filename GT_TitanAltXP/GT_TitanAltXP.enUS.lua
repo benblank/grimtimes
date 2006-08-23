@@ -1,3 +1,8 @@
+-- $LastChangedBy$
+-- $LastChangedRevision$
+-- $LastChangedDate$
+-- $HeadURL$
+
 GT_Locale.AddString("GT_TitanAltXP", "enUS", "AddonName", "Grim Times: Titan AltXP")
 GT_Locale.AddString("GT_TitanAltXP", "enUS", "AddonVersion", "11000-1")
 

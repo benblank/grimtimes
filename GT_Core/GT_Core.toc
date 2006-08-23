@@ -5,6 +5,8 @@
 ## Notes: Core functions required by all Grim Times addons.
 ## SavedVariables: GT_Output_Config
 
+# $Id$
+
 GT_Output.lua
 GT_Output.enUS.lua
 

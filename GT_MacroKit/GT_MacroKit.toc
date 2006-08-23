@@ -4,5 +4,7 @@
 ## Notes: Provides a number of useful functions for macro writers.
 ## RequiredDeps: GT_Core
 
+# $Id$
+
 GT_MacroKit.xml
 GT_MacroKit.lua
