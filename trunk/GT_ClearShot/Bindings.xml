@@ -1,4 +1,6 @@
 <Bindings>
+	<!-- $Id -->
+
 	<Binding name="GTCSSHOOT" header="GRIMTIMES">
 		GT_ClearShot.Prep()
 	</Binding>

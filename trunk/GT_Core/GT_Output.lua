@@ -1,3 +1,8 @@
+-- $LastChangedBy$
+-- $LastChangedRevision$
+-- $LastChangedDate$
+-- $HeadURL$
+
 GT_Output_Config = {
 	fallback = "enUS",
 	level = 2, -- GT_Output.Levels.Warn

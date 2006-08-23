@@ -1,3 +1,8 @@
+-- $LastChangedBy$
+-- $LastChangedRevision$
+-- $LastChangedDate$
+-- $HeadURL$
+
 GT_Output.AddString("GT_Output", "enUS", "Debug", "[%s] Debug: %s")
 GT_Output.AddString("GT_Output", "enUS", "Error", "[%s] Error!  %s")
 GT_Output.AddString("GT_Output", "enUS", "Info",  "[%s] %s")

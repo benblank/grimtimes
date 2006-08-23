@@ -1,3 +1,8 @@
+-- $LastChangedBy$
+-- $LastChangedRevision$
+-- $LastChangedDate$
+-- $HeadURL$
+
 GT_EnhQuality = {
 	TooltipHook = function(funcVars, retVal, frame, name, link, quality, count)
 		if EnhTooltip.LinkType(link) ~= "item" then return end

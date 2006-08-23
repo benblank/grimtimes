@@ -5,4 +5,7 @@
 ## Notes: Stores information on guild members each time the guild pane is opened.
 ## SavedVariables: GHT_Roster
 ## DefaultState: enabled
+
+# $Id$
+
 GHT_Roster.xml

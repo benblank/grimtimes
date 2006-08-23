@@ -1,3 +1,8 @@
+-- $LastChangedBy$
+-- $LastChangedRevision$
+-- $LastChangedDate$
+-- $HeadURL$
+
 GT_Output.AddString("GT_Event", "enUS", "AddEvent", "Adding new event: \"%s\" for \"%s\".")
 GT_Output.AddString("GT_Event", "enUS", "BadTrigger", "Triggered event \"%s\", but no addons are currently registered for it.")
 GT_Output.AddString("GT_Event", "enUS", "Calling", "Passing event \"%s\" to \"%s\".")

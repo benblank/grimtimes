@@ -1,3 +1,8 @@
+-- $LastChangedBy$
+-- $LastChangedRevision$
+-- $LastChangedDate$
+-- $HeadURL$
+
 BINDING_HEADER_GRIMTIMES = "Grim Times"
 BINDING_NAME_GTCSSHOOT   = "Take a ClearShot (no UI)"
 BINDING_NAME_GTCSFIX     = "Restore Settings (if something goes wrong)"

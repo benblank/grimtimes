@@ -6,6 +6,8 @@
 ## RequiredDeps: Titan
 ## SavedVariables: GT_TitanAltXP_Config
 
+# $Id$
+
 #GT_TitanAltXP.enUS.lua
 GT_TitanAltXP.lua
 GT_TitanAltXP.xml

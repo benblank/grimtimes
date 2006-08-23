@@ -1,3 +1,8 @@
+-- $LastChangedBy$
+-- $LastChangedRevision$
+-- $LastChangedDate$
+-- $HeadURL$
+
 GT_TitanAltXP_Config = {
 	xp       = true,
 	xp_pct   = true,

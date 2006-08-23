@@ -4,4 +4,6 @@
 ## Notes: Adds item quality to EnhTooltip.
 ## RequiredDeps: EnhTooltip, Stubby
 
+# $Id$
+
 GT_EnhQuality.lua
