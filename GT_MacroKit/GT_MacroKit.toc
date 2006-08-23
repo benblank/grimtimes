@@ -1,6 +1,6 @@
-## Interface: 11100
+## Interface: 11200
 ## Title: Grim Times: MacroKit
-## Version: 11100-1
+## Version: 11200-1
 ## Notes: Provides a number of useful functions for macro writers.
 ## RequiredDeps: GT_Core
 

@@ -1,6 +1,6 @@
-## Interface: 11100
+## Interface: 11200
 ## Title: Grim Times: EnhQuality
-## Version: 11100-1
+## Version: 11200-1
 ## Notes: Adds item quality to EnhTooltip.
 ## RequiredDeps: EnhTooltip, Stubby
 

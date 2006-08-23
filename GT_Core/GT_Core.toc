@@ -1,7 +1,7 @@
-## Interface: 11100
+## Interface: 11200
 ## Title: Grim Times: Core
 ## Author: Birne @ Draenor
-## Version: 11100-1
+## Version: 11200-1
 ## Notes: Core functions required by all Grim Times addons.
 ## SavedVariables: GT_Output_Config
 
