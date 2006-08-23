@@ -1,6 +1,6 @@
-## Interface: 11100
+## Interface: 11200
 ## Title: Grim Times: ClearShot
-## Version: 11100-1
+## Version: 11200-1
 ## Notes: Allows you to take uncluttered screenshots
 ## SavedVariables: GT_ClearShot_Config
 ## RequiredDeps: GT_Core
