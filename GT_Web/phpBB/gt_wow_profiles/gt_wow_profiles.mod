@@ -1,7 +1,8 @@
 ##############################################################
+##
 ## MOD Title: Grim Times: WoW Profiles for phpBB
-## MOD Version: 0.9.4
-## MOD Author: (Malefactor @ Draenor)
+## MOD Version: 0.9.5
+## MOD Author: None < N/A > (N/A) http://code.google.com/p/grimtimes/
 ## MOD Description: Adds fields for WoW race, class, PvP rank,
 ## gender, profile and talent build to user profiles and posts.
 ##
@@ -27,14 +28,18 @@
 ##     images/rankgif.php => images/gt_wow_profiles/rankgif.php
 ##
 ## License: http://opensource.org/licenses/bsd-license.php The BSD License
+##
 ##############################################################
+##
 ## For security purposes, please check: http://www.phpbb.com/mods/
 ## for the latest version of this MOD. Although MODs are checked
 ## before being allowed in the MODs Database there is no guarantee
 ## that there are no security problems within the MOD. No support
 ## will be given for MODs not found within the MODs Database which
 ## can be found at http://www.phpbb.com/mods/
+##
 ##############################################################
+##
 ## Author Notes:
 ##
 ## Adds fields in user profile (edit) for "WoW Race", "WoW Class",
@@ -45,7 +50,9 @@
 ## and copy the string of numbers from the URL.
 ##
 ##############################################################
+##
 ## Before Adding This MOD To Your Forum, You Should Back Up All Files Related To This MOD
+##
 ##############################################################
 
 #
@@ -120,13 +127,13 @@ function wow_link_service($service, $name, $text = "Profile") {
 
 	if (!array_key_exists($service, $services)) return "";
 
-	return '<a href="' . sprintf($services[$service], $name) . '">' . $text . '</a>';
+	return '<a target="_blank" href="' . sprintf($services[$service], $name) . '">' . $text . '</a>';
 }
 
 function wow_link_talents($class, $talents, $text = "Talents") {
 	global $lang;
 
-	return "<a href=\"http://www.worldofwarcraft.com/info/classes/" . strtolower($lang['wow_classes'][$class]) . "/talents.html?$talents\">$text</a>";
+	return "<a target="_blank" href=\"http://www.worldofwarcraft.com/info/classes/" . strtolower($lang['wow_classes'][$class]) . "/talents.html?$talents\">$text</a>";
 }
 
 // END -- Grim Times: WoW Profiles for phpBB
