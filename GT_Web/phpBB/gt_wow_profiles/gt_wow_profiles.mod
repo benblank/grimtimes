@@ -1,12 +1,13 @@
+## EasyMod Compliant
 ##############################################################
 ##
 ## $Id$
 ##
 ## MOD Title: Grim Times: WoW Profiles for phpBB
-## MOD Author: Malefactor < N/A > (N/A) http://code.google.com/p/grimtimes/
+## MOD Author: DrDark < N/A > (N/A) http://code.google.com/p/grimtimes/
 ## MOD Description: Adds fields for WoW race, class, PvP rank,
 ## gender, profile and talent build to user profiles and posts.
-## MOD Version: 1.0.0
+## MOD Version: 1.0.1
 ##
 ## Installation Level: Easy
 ## Installation Time: 5 Minutes

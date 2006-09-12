@@ -1,9 +1,10 @@
+## EasyMod Compliant
 ##############################################################
 ##
 ## $Id$
 ##
 ## MOD Title: Grim Times: WoW Items for phpBB
-## MOD Author: Malefactor < N/A > (N/A) http://code.google.com/p/grimtimes/
+## MOD Author: DrDark < N/A > (N/A) http://code.google.com/p/grimtimes/
 ## MOD Description: Adds a new BBcode for producing styled links
 ## to WoW item data, with mouseover tooltips.
 ## MOD Version: 0.9
