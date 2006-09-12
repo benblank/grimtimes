@@ -1,12 +1,12 @@
 ##############################################################
 ##
+## $Id$
+##
 ## MOD Title: Grim Times: WoW Profiles for phpBB
-## MOD Version: 0.9.5
-## MOD Author: None < N/A > (N/A) http://code.google.com/p/grimtimes/
+## MOD Author: Malefactor < N/A > (N/A) http://code.google.com/p/grimtimes/
 ## MOD Description: Adds fields for WoW race, class, PvP rank,
 ## gender, profile and talent build to user profiles and posts.
-##
-## SVN: $Id$
+## MOD Version: 1.0.0
 ##
 ## Installation Level: Easy
 ## Installation Time: 5 Minutes
@@ -23,7 +23,7 @@
 ##     templates/subSilver/viewtopic_body.tpl
 ##     viewtopic.php
 ##
-## Included Files: 41
+## Included Files: 45
 ##     images/*.gif => images/gt_wow_profiles/*.gif
 ##     images/rankgif.php => images/gt_wow_profiles/rankgif.php
 ##
@@ -43,7 +43,7 @@
 ## Author Notes:
 ##
 ## Adds fields in user profile (edit) for "WoW Race", "WoW Class",
-## "WoW Profile Service" (CTProfile, Thottbot, or Allakhazam), "WoW
+## "WoW Profile Service" (CTProfiles, Thottbot, or Allakhazam), "WoW
 ## Profile Name/Number", "WoW Talents", and "WoW PvP Rank".  WoW
 ## talents are specified using the same format as for the official
 ## WoW Forum.  Use the Talent Calculator on the official web site
@@ -133,7 +133,7 @@ function wow_link_service($service, $name, $text = "Profile") {
 function wow_link_talents($class, $talents, $text = "Talents") {
 	global $lang;
 
-	return "<a target="_blank" href=\"http://www.worldofwarcraft.com/info/classes/" . strtolower($lang['wow_classes'][$class]) . "/talents.html?$talents\">$text</a>";
+	return '<a target="_blank" href="http://www.worldofwarcraft.com/info/classes/' . strtolower($lang['wow_classes'][$class]) . "/talents.html?$talents\">$text</a>";
 }
 
 // END -- Grim Times: WoW Profiles for phpBB
@@ -222,20 +222,33 @@ u.user_email
 		// BEGIN -- Grim Times: WoW Profiles for phpBB
 
 		if ($postrow[$i]['user_wow_race'] && $postrow[$i]['user_wow_gender']) {
-			$wow_race = wow_image_race($postrow[$i]['user_wow_race'], $postrow[$i]['user_wow_gender'], $postrow[$i]['user_wow_profile_service'], $postrow[$i]['user_wow_profile_name']);
+			$wow_race_img = wow_image_race($postrow[$i]['user_wow_race'], $postrow[$i]['user_wow_gender'], $postrow[$i]['user_wow_profile_service'], $postrow[$i]['user_wow_profile_name']);
 		} else {
-			$wow_race = '';
+			$wow_race_img = '';
+		}
+
+		if ($postrow[$i]['user_wow_gender']) {
+			$wow_gender_race_class = $lang['wow_genders'][$postrow[$i]['user_wow_gender']];
+		} else {
+			$wow_gender_race_class = "";
+		}
+
+		if ($postrow[$i]['user_wow_race']) {
+			$wow_gender_race_class .= ($wow_gender_race_class ? " " : "") . $lang['wow_races'][$postrow[$i]['user_wow_race']];
 		}
 
 		if ($postrow[$i]['user_wow_class']) {
-			$wow_class = wow_image_class($postrow[$i]['user_wow_class'], $postrow[$i]['user_wow_talents'], $postrow[$i]['user_wow_talents_title']);
+			$wow_class_img = wow_image_class($postrow[$i]['user_wow_class'], $postrow[$i]['user_wow_talents'], $postrow[$i]['user_wow_talents_title']);
+			$wow_gender_race_class .= ($wow_gender_race_class ? " " : "") . $lang['wow_classes'][$postrow[$i]['user_wow_class']];
 		} else {
-			$wow_class = '';
+			$wow_class_img = '';
 		}
 
 		if ($postrow[$i]['user_wow_pvp_rank']) {
-			$wow_pvp_rank = wow_image_pvp_rank($postrow[$i]['user_wow_pvp_rank'], $postrow[$i]['user_wow_race']);
+			$wow_pvp_rank_img = wow_image_pvp_rank($postrow[$i]['user_wow_pvp_rank'], $postrow[$i]['user_wow_race']);
+			$wow_pvp_rank = $lang['wow_pvp_ranks'][$lang['wow_race_factions'][$postrow[$i]['user_wow_race']]][$postrow[$i]['user_wow_pvp_rank']] . " ";
 		} else {
+			$wow_pvp_rank_img = '';
 			$wow_pvp_rank = '';
 		}
 
@@ -266,9 +279,11 @@ u.user_email
 #
 
 		// BEGIN -- Grim Times: WoW Profiles for phpBB
-		$wow_race = '';
-		$wow_class = '';
+		$wow_race_img = '';
+		$wow_class_img = '';
+		$wow_pvp_rank_img = '';
 		$wow_pvp_rank = '';
+		$wow_gender_race_class = '';
 		$wow_profile = '';
 		$wow_talents = '';
 		// END -- Grim Times: WoW Profiles for phpBB
@@ -284,9 +299,11 @@ u.user_email
 #
 
 		// BEGIN -- Grim Times: WoW Profiles for phpBB
-		'WOW_RACE' => $wow_race,
-		'WOW_CLASS' => $wow_class,
+		'WOW_RACE_IMG' => $wow_race_img,
+		'WOW_CLASS_IMG' => $wow_class_img,
+		'WOW_PVP_RANK_IMG' => $wow_pvp_rank_img,
 		'WOW_PVP_RANK' => $wow_pvp_rank,
+		'WOW_GENDER_RACE_CLASS' => $wow_gender_race_class,
 		'WOW_PROFILE' => $wow_profile,
 		'WOW_TALENTS' => $wow_talents,
 		// END -- Grim Times: WoW Profiles for phpBB
@@ -307,13 +324,25 @@ templates/subSilver/viewtopic_body.tpl
 #-----[ IN-LINE FIND ]---------------------------------------------------
 #
 
+{postrow.POSTER_NAME}</b>
+
+#
+#-----[ IN-LINE BEFORE, ADD ]---------------------------------------------------
+#
+
+{postrow.WOW_PVP_RANK}
+
+#
+#-----[ IN-LINE FIND ]---------------------------------------------------
+#
+
 <br />{postrow.POSTER_JOINED}
 
 #
 #-----[ IN-LINE BEFORE, ADD ]---------------------------------------------------
 #
 
-<br />{postrow.WOW_PROFILE}<br />{postrow.WOW_TALENTS}
+<br />{postrow.WOW_GENDER_RACE_CLASS}<br />{postrow.WOW_PROFILE}<br />{postrow.WOW_TALENTS}
 
 #
 #-----[ FIND ]-------------------------------------
@@ -331,7 +360,7 @@ postrow.PROFILE_IMG}
 #-----[ IN-LINE BEFORE, ADD ]---------------------------------------------------
 #
 
-postrow.WOW_RACE} {postrow.WOW_CLASS} {postrow.WOW_PVP_RANK} {
+postrow.WOW_RACE_IMG} {postrow.WOW_CLASS_IMG} {postrow.WOW_PVP_RANK_IMG} {
 
 #
 #-----[ OPEN ]------------------------------------------
@@ -897,7 +926,7 @@ $lang['wow_pvp_ranks']['h'][13] = "Warlord";
 $lang['wow_pvp_ranks']['h'][14] = "High Warlord";
 
 $lang['wow_profile_services']['ak'] = "Allakhazam";
-$lang['wow_profile_services']['ct'] = "CTProfile";
+$lang['wow_profile_services']['ct'] = "CTProfiles";
 $lang['wow_profile_services']['tb'] = "ThottBot";
 
 // END -- Grim Times: WoW Profiles for phpBB

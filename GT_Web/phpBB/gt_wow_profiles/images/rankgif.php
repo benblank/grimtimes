@@ -1,4 +1,4 @@
-<?php /* SVN: $Id$ */
+<?php /* $Id$ */
 	if (!defined('IMG_GIF')) {
 		$rank = file_exists("rank" . $_GET['rank'] . ".gif") ? $_GET['rank'] : "bg";
 

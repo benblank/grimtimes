@@ -1,4 +1,4 @@
-<?php /* SVN: $Id$ */
+<?php /* $Id$ */
 
 $wow_item_clean['&lt;']  = '<';
 $wow_item_clean['&gt;']  = '>';

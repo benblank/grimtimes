@@ -1,12 +1,12 @@
 ##############################################################
 ##
+## $Id$
+##
 ## MOD Title: Grim Times: WoW Items for phpBB
-## MOD Version: 0.9
-## MOD Author: None < N/A > (N/A) http://code.google.com/p/grimtimes/
+## MOD Author: Malefactor < N/A > (N/A) http://code.google.com/p/grimtimes/
 ## MOD Description: Adds a new BBcode for producing styled links
 ## to WoW item data, with mouseover tooltips.
-##
-## SVN: $Id$
+## MOD Version: 0.9
 ##
 ## Installation Level: Easy
 ## Installation Time: 5 Minutes
