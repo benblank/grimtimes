@@ -30,6 +30,16 @@
 ##
 ##############################################################
 ##
+## IMPORTANT: you MUST first have already installed the Multi BBCode
+## MOD available at http://www.phpbb.com/mods/
+##
+##############################################################
+##
+## IMPORTANT: you MUST also install the "Better BBcode UID Remover"
+## included with this mod!
+##
+##############################################################
+##
 ## Author Notes:
 ##
 ## All item data courtesy of Allakhazam.  Caches both item data
@@ -49,11 +59,6 @@
 ##
 ##############################################################
 ##
-## IMPORTANT: you MUST first have already installed the Multi BBCode
-## MOD available at http://www.phpbb.com/mods/
-##
-##############################################################
-##
 ## Before Adding This MOD To Your Forum, You Should Back Up All Files Related To This MOD
 ##
 ##############################################################
@@ -69,9 +74,8 @@ CREATE TABLE phpbb_wow_items (
   item_icon TINYTEXT DEFAULT NULL,
   item_stamp INT DEFAULT NULL,
   item_html TEXT DEFAULT NULL,
-  PRIMARY KEY (item_id),
-  FULLTEXT KEY item_name (item_name)
-) DEFAULT CHARSET=utf8;
+  PRIMARY KEY (item_id)
+);
 
 #
 #-----[ COPY ]------------------------------------------
@@ -148,20 +152,20 @@ $EMBB_values = array(''
 
 	// BEGIN -- Grim Times: WoW Items for phpBB
 
-	// [item]<name or partial name>[/item] and [item]<itemnum>[/item]
-	$patterns[] = "#\[item\]([^\[]+)\[/item\]#is";
+	// [item]<non-unique search or name>[/item]
+	$patterns[] = "#\[item:(\d)\]([^\[]+)\[/item\]#is";
 	$replacements[] = $bbcode_tpl['wow_item1'];
 
-	// [item=<itemnum>]<link text>[/item]
-	$patterns[] = "#\[item=(\d+)\]([^\[]+)\[/item\]#is";
+	// [item]<unique search or name>[/item] and [item=<itemnum>]<link text>[/item]
+	$patterns[] = "#\[item[=:](\d+):(\d)\]([^\[]+)\[/item\]#is";
 	$replacements[] = $bbcode_tpl['wow_item2'];
 
-	// [itemdesc]<name or partial name>[/itemdesc] and [itemdesc]<itemnum>[/itemdesc]
-	$patterns[] = "#\[itemdesc\]([^\[]+)\[/itemdesc\]#is";
+	// [itemdesc]<non-unique search or name>[/itemdesc]
+	$patterns[] = "#\[itemdesc:(\d)\]([^\[]+)\[/itemdesc\]#is";
 	$replacements[] = $bbcode_tpl['wow_itemdesc1'];
 
-	// [itemdesc=<itemnum>]<ignored>[/itemdesc]
-	$patterns[] = "#\[itemdesc=(\d+)\][^\[]*\[/item\]#is";
+	// [itemdesc]<unique search or name>[/itemdesc] and [itemdesc=<itemnum>]<ignored>[/itemdesc]
+	$patterns[] = "#\[itemdesc[=:](\d+):(\d)\][^\[]*\[/item\]#is";
 	$replacements[] = $bbcode_tpl['wow_itemdesc2'];
 
 	// END -- Grim Times: WoW Items for phpBB
@@ -183,6 +187,10 @@ templates/subSilver/bbcode.tpl
 #
 
 <!-- BEGIN item --><a class="{QUALITY}" target="_blank" href="{URL}">{TEXT}</a><!-- END item -->
+
+<!-- BEGIN itemdesc --></span>
+{ITEMDIV}
+<span class="postbody"><!-- END itemdesc -->
 
 #
 #-----[ SAVE/CLOSE ALL FILES ]------------------------------------------
