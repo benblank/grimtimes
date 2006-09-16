@@ -111,6 +111,18 @@ includes/bbcode.php
 #-----[ FIND ]------------------------------------------
 #
 
+define("BBCODE_UID_LEN", 10);
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+include("gt_wow_items.php");
+
+#
+#-----[ FIND ]------------------------------------------
+#
+
 	$EMBB_widths = array(''
 	$EMBB_values = array(''
 
@@ -144,6 +156,22 @@ $EMBB_values = array(''
 #-----[ FIND ]------------------------------------------
 #
 
+	$bbcode_tpl['email'] = str_replace('{EMAIL}', '\\1', $bbcode_tpl['email']);
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+	// BEGIN -- Grim Times: WoW Items for phpBB
+
+	$bbcode_tpl['wow_item1'] = str_replace('{}', '\\1', $bbcode_tpl['wow_item1']);
+
+	// END -- Grim Times: WoW Items for phpBB
+
+#
+#-----[ FIND ]------------------------------------------
+#
+
 	$replacements[] = $bbcode_tpl['email'];
 
 #
@@ -153,19 +181,19 @@ $EMBB_values = array(''
 	// BEGIN -- Grim Times: WoW Items for phpBB
 
 	// [item]<non-unique search or name>[/item]
-	$patterns[] = "#\[item:(\d)\]([^\[]+)\[/item\]#is";
+	$patterns[] = "#\[item:(\d):$uid\]([^\[]+)\[/item:$uid\]#is";
 	$replacements[] = $bbcode_tpl['wow_item1'];
 
 	// [item]<unique search or name>[/item] and [item=<itemnum>]<link text>[/item]
-	$patterns[] = "#\[item[=:](\d+):(\d)\]([^\[]+)\[/item\]#is";
+	$patterns[] = "#\[item[=:](\d+):(\d):$uid\]([^\[]+)\[/item:$uid\]#is";
 	$replacements[] = $bbcode_tpl['wow_item2'];
 
 	// [itemdesc]<non-unique search or name>[/itemdesc]
-	$patterns[] = "#\[itemdesc:(\d)\]([^\[]+)\[/itemdesc\]#is";
+	$patterns[] = "#\[itemdesc:(\d):$uid\]([^\[]+)\[/itemdesc:$uid\]#is";
 	$replacements[] = $bbcode_tpl['wow_itemdesc1'];
 
 	// [itemdesc]<unique search or name>[/itemdesc] and [itemdesc=<itemnum>]<ignored>[/itemdesc]
-	$patterns[] = "#\[itemdesc[=:](\d+):(\d)\][^\[]*\[/item\]#is";
+	$patterns[] = "#\[itemdesc[=:](\d+):(\d):$uid\][^\[]*\[/itemdesc:$uid\]#is";
 	$replacements[] = $bbcode_tpl['wow_itemdesc2'];
 
 	// END -- Grim Times: WoW Items for phpBB
@@ -186,7 +214,7 @@ templates/subSilver/bbcode.tpl
 #-----[ AFTER, ADD ]------------------------------------------
 #
 
-<!-- BEGIN item --><a class="{QUALITY}" target="_blank" href="{URL}">{TEXT}</a><!-- END item -->
+<!-- BEGIN item --><a class="quality{QUALITY}" target="_blank" href="{URL}">{TEXT}</a><!-- END item -->
 
 <!-- BEGIN itemdesc --></span>
 {ITEMDIV}

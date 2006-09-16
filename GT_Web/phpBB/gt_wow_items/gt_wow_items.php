@@ -1,5 +1,9 @@
 <?php /* $Id$ */
 
+if (!defined('IN_PHPBB')) {
+	die("Hacking attempt");
+}
+
 $wow_item_clean['&lt;']  = '<';
 $wow_item_clean['&gt;']  = '>';
 $wow_item_clean['&quot;']  = '"';
@@ -34,4 +38,10 @@ function wow_item_get_id($name) {
 
 function wow_item_get_info($itemnum) {
 	$fetch_url = "http://wow.allakhazam.com/dev/wow/item-xml.pl?witem=" + $item_num;
+}
+
+function wow_item_bbcode_first_pass($text, $uid) {
+}
+
+function wow_item_bbcode_second_pass($text, $uid) {
 }
