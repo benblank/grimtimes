@@ -81,25 +81,7 @@ CREATE TABLE phpbb_wow_items (
 #-----[ COPY ]------------------------------------------
 #
 
-#
-#-----[ OPEN ]------------------------------------------
-#
-
-includes/constants.php
-
-#
-#-----[ FIND ]------------------------------------------
-#
-
-?>
-
-#
-#-----[ BEFORE, ADD ]------------------------------------------
-#
-
-// BEGIN -- Grim Times: WoW Items for phpBB
-define('WOW_ITEMS_TABLE', $table_prefix.'wow_items');
-// END -- Grim Times: WoW Items for phpBB
+Copy wow_item_cache.php to wow_item_cache.php
 
 #
 #-----[ OPEN ]------------------------------------------
@@ -208,7 +190,7 @@ templates/subSilver/bbcode.tpl
 #-----[ FIND ]------------------------------------------
 #
 
-<!-- BEGIN email -->
+<!-- END email -->
 
 #
 #-----[ AFTER, ADD ]------------------------------------------
