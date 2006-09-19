@@ -14,8 +14,10 @@
 ## Files To Edit: ?
 ##     file!
 ##
-## Included Files: ?
-##     file!
+## Included Files: 3
+##     functions_wow_items.php
+##     wow_items.css
+##     wow_items_cache.php
 ##
 ## License: http://opensource.org/licenses/bsd-license.php The BSD License
 ##
@@ -72,8 +74,8 @@ CREATE TABLE phpbb_wow_items (
   item_name TINYTEXT NOT NULL,
   item_quality TINYINT UNSIGNED DEFAULT NULL,
   item_icon TINYTEXT DEFAULT NULL,
-  item_stamp INT DEFAULT NULL,
-  item_html TEXT DEFAULT NULL,
+  item_stamp TIMESTAMP DEFAULT NULL,
+  item_desc TEXT DEFAULT NULL,
   PRIMARY KEY (item_id)
 );
 
@@ -82,7 +84,8 @@ CREATE TABLE phpbb_wow_items (
 #
 
 Copy functions_wow_items.php to includes/functions_wow_items.php
-Copy wow_item_cache.php to wow_item_cache.php
+Copy wow_items.css to templates/subSilver/wow_items.css
+Copy wow_items_cache.php to wow_items_cache.php
 
 #
 #-----[ OPEN ]------------------------------------------
@@ -100,7 +103,7 @@ define("BBCODE_UID_LEN", 10);
 #-----[ AFTER, ADD ]------------------------------------------
 #
 
-include($phpbb_root_path . 'functions_wow_items.' . $phpEx);
+include($phpbb_root_path . 'includes/functions_wow_items.'.$phpEx);
 
 #
 #-----[ FIND ]------------------------------------------
@@ -121,7 +124,7 @@ $EMBB_widths = array(''
 # Rule of thumb seems to be 25 + 5/char?
 #
 
-, '45', '65'
+, '45', '50', '65'
 
 #
 #-----[ IN-LINE FIND ]---------------------------------------------------
@@ -133,7 +136,7 @@ $EMBB_values = array(''
 #-----[ IN-LINE AFTER, ADD ]---------------------------------------------------
 #
 
-, 'item', 'itemdesc'
+, 'item', 'item=', 'itemdesc'
 
 #
 #-----[ FIND ]------------------------------------------
@@ -197,10 +200,10 @@ templates/subSilver/bbcode.tpl
 #-----[ AFTER, ADD ]------------------------------------------
 #
 
-<!-- BEGIN item --><a class="quality{QUALITY}" target="_blank" href="{URL}">{TEXT}</a><!-- END item -->
+<!-- BEGIN item --><div id="item{ID}" style="display:none">{ITEMDIV}</div><a class="quality{QUALITY}" onmouseover="wow_item_hover('{ID}')" onmouseover="wow_item_unhover()" target="_blank" href="{URL}">{TEXT}</a><!-- END item -->
 
 <!-- BEGIN itemdesc --></span>
-{ITEMDIV}
+<div id="{ID}">{ITEMDIV}</div>
 <span class="postbody"><!-- END itemdesc -->
 
 #
