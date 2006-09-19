@@ -50,6 +50,7 @@ function wow_item_search($search) {
 	$result = $db->sql_fetchrowset($result);
 
 	foreach ($result as $k =>$v) $result[$k] = $v['item_id'];
+	sort($result);
 
 	return $result;
 }

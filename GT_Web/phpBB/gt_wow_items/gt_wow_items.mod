@@ -81,6 +81,7 @@ CREATE TABLE phpbb_wow_items (
 #-----[ COPY ]------------------------------------------
 #
 
+Copy functions_wow_items.php to includes/functions_wow_items.php
 Copy wow_item_cache.php to wow_item_cache.php
 
 #
@@ -99,7 +100,7 @@ define("BBCODE_UID_LEN", 10);
 #-----[ AFTER, ADD ]------------------------------------------
 #
 
-include("gt_wow_items.php");
+include($phpbb_root_path . 'functions_wow_items.' . $phpEx);
 
 #
 #-----[ FIND ]------------------------------------------
