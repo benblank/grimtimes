@@ -11,8 +11,12 @@
 ##
 ## Installation Level: Easy
 ## Installation Time: 5 Minutes
-## Files To Edit: ?
-##     file!
+## Files To Edit: 5
+##     includes/bbcode.php
+##     language/lang_english/lang_main.php
+##     templates/subSilver/bbcode.tpl
+##     templates/subSilver/posting_body.tpl
+##     templates/subSilver/simple_header.tpl
 ##
 ## Included Files: 3
 ##     functions_wow_items.php
@@ -74,7 +78,6 @@ CREATE TABLE phpbb_wow_items (
   item_name TINYTEXT NOT NULL,
   item_quality TINYINT UNSIGNED NULL,
   item_icon TINYTEXT NULL,
-  item_stamp TIMESTAMP NULL,
   item_desc TEXT NULL,
   PRIMARY KEY (item_id)
 );
@@ -142,31 +145,46 @@ $EMBB_values = array(''
 #-----[ FIND ]------------------------------------------
 #
 
-	$replacements[] = $bbcode_tpl['email'];
+	$text = bbencode_second_pass_code($text, $uid, $bbcode_tpl);
 
 #
 #-----[ AFTER, ADD ]------------------------------------------
 #
 
-	// BEGIN -- Grim Times: WoW Items for phpBB
+	$text = wow_item_bbcode_second_pass($text, $bbcode_tpl);
 
-	// [item]<non-unique search or name>[/item]
-	$patterns[] = "#\[item:(\d):$uid\]([^\[]+)\[/item:$uid\]#is";
-	$replacements[] = $bbcode_tpl['wow_item1'];
+#
+#-----[ FIND ]------------------------------------------
+#
 
-	// [item]<unique search or name>[/item] and [item=<itemnum>]<link text>[/item]
-	$patterns[] = "#\[item[=:](\d+):(\d):$uid\]([^\[]+)\[/item:$uid\]#is";
-	$replacements[] = $bbcode_tpl['wow_item2'];
+	$text = bbencode_first_pass_pda($text, $uid, '[code]', '[/code]', '', true, '');
 
-	// [itemdesc]<non-unique search or name>[/itemdesc]
-	$patterns[] = "#\[itemdesc:(\d):$uid\]([^\[]+)\[/itemdesc:$uid\]#is";
-	$replacements[] = $bbcode_tpl['wow_itemdesc1'];
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
 
-	// [itemdesc]<unique search or name>[/itemdesc] and [itemdesc=<itemnum>]<ignored>[/itemdesc]
-	$patterns[] = "#\[itemdesc[=:](\d+):(\d):$uid\][^\[]*\[/itemdesc:$uid\]#is";
-	$replacements[] = $bbcode_tpl['wow_itemdesc2'];
+	// Our first pass doesn't actually change the text.
+	wow_item_bbcode_first_pass($text);
 
-	// END -- Grim Times: WoW Items for phpBB
+#
+#-----[ OPEN ]---------------------------------
+#
+
+language/lang_english/lang_main.php
+
+#
+#-----[ FIND ]---------------------------------
+#
+
+$lang['bbcode_help']['value'] = 'BBCode Name: Info (Alt+%s)';
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+$lang['bbcode_help']['item'] = "Item link (by name search or item ref)";
+$lang['bbcode_help']['item='] = "Item link (by item ref, with link text)";
+$lang['bbcode_help']['itemdesc'] = "Item (in-line)";
 
 #
 #-----[ OPEN ]------------------------------------------
@@ -189,6 +207,48 @@ templates/subSilver/bbcode.tpl
 <!-- BEGIN itemdesc --></span>
 <div id="{ID}">{ITEMDIV}</div>
 <span class="postbody"><!-- END itemdesc -->
+
+#
+#-----[ OPEN ]---------------------------------
+#
+
+templates/subSilver/posting_body.tpl
+
+#
+#-----[ FIND ]------------------------------------------
+#
+
+bbtags = new Array(
+
+#
+#-----[ IN-LINE FIND ]---------------------------------------------------
+#
+
+'[/url]'
+
+#
+#-----[ IN-LINE AFTER, ADD ]---------------------------------------------------
+#
+
+, '[item]', '[/item]', '[item=####]', '[/item]', '[itemdesc]', '[/itemdesc]'
+
+#
+#-----[ OPEN ]------------------------------------------
+#
+
+templates/subSilver/simple_header.tpl
+
+#
+#-----[ FIND ]------------------------------------------
+#
+
+link rel="stylesheet" href="templates/subSilver/{T_HEAD_STYLESHEET}" type="text/css"
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+<link rel="stylesheet" href="templates/subSilver/wow_items.css" type="text/css" />
 
 #
 #-----[ SAVE/CLOSE ALL FILES ]------------------------------------------

@@ -34,15 +34,15 @@ function wow_item_clean($html) {
 	return preg_replace(array_keys($wow_item_clean), array_values($wow_item_clean), $html);
 }
 
-function wow_item_search($search) {
+function wow_item_search($search, $with_desc = true) {
 	global $db;
 
-	$params = preg_match('/^([^\(\)]+)(?:\(()\))?/$', $search);
-	$params[0] = trim($params[0]);
-	$sql = "SELECT item_id FROM " . WOW_ITEMS_TABLE . " WHERE item_name LIKE '%{$params[0]}%'";
+	if (!preg_match('/^([^\(\)]+)(?:\(([^\(\)]+)\))?$/', $search, $params)) return array();
+	$params[1] = str_replace("'", "''", trim($params[1]));
+	$sql = "SELECT item_id FROM " . WOW_ITEMS_TABLE . " WHERE item_name LIKE '%{$params[1]}%'";
 
-	if (isset($params[1])) {
-		$params[1] = trim($params[1]);
+	if ($with_desc && isset($params[2])) {
+		$params[2] = str_replace("'", "''", trim($params[2]));
 		$sql .= " AND item_desc LIKE '%{$params[1]}%'";
 	}
 
@@ -72,14 +72,14 @@ function wow_item_cache_item($item) {
 	if (gettype($item) == "array") {
 		$query = array();
 		foreach ($item as $v) if (is_numeric($v)) $query[] = "items[]=" . intval($v);
-		if (count($array) == 0) return false;
+		if (count($query) == 0) return false;
 		$query = implode("&", array_unique($query));
 	} else if (is_numeric($item)) {
 		$query = "item=" . intval($item);
 	} else return false;
 
 	// The wow_items_cache script uses ignore_user_abort() to "asynchonously" cache items in the background.
-	$handle = fopen($server_protocol . $server_name . $server_port . $script_name . "wow_items_cache.$phpEx?$query", 'r');
+	$handle = fopen($server_protocol . $server_name . $server_port . $script_name . "/wow_items_cache.$phpEx?$query", 'r');
 	fclose($handle);
 
 	// We may not know whether it worked or not, but we successfully made the request.
@@ -93,49 +93,22 @@ function wow_item_get_info($itemnum) {
 	return $result[0];
 }
 
-// Wow_Item_Bbode_Pass_Data -- I tried to prevent having this
-// global, but frankly, it was just too much trouble.
-$wibpd = array();
+function wow_item_bbcode_first_pass($text) {
+	preg_match_all('#\[item(?:desc)?((?:=\d+)?)\]([^\[]+)\[/item(?:desc)?\]#is', $text, $matches, PREG_SET_ORDER);
 
-function wow_item_bbcode_first_pass($text, $uid) {
-	global $wibpd;
-
-	$wibpd['uid'] = $uid;
-	$wibpd['list'] = array();
-	preg_replace_callback('#\[item((?:desc)?)((?:=\d+)?)\]([^\[]+)\[/item(?:desc)?\]#is', $callback, $text);
-}
-
-function wow_item_bbcode_first_pass_callback($matches) {
-	global $wibpd;
-
-	$tag = $matches[1];
-	$id = "";
-	$q = 1;
-	$text = $matches[3];
-
-	if ($matches[2]) {
-		$id = $matches[2];
-		$info = wow_item_get_info($matches[2]);
-
-		if ($info) {
-			$q = $info['item_quality'];
-		}
-	} else if (preg_match('/^\d+$/', $matches[3])) {
-		$info = wow_item_get_info($matches[3]);
-		if ($info) $q = $info['item_quality'];
-	} else {
-		$info = wow_item_search($matches[3]);
-		if ($info && count($info) == 1) {
-			$id = ":" . $info[0];
-			$info = wow_item_get_info($info[0]);
-			if ($info) $q = $info['item_quality'];
+	// There's no way to gather useful info ahead of time on non-cached items,
+	// so we'll cache them on the first pass and process on the second.
+	foreach($matches as $match) {
+		if ($match[1]) {
+			wow_item_cache_item(intval(substr($match[1], 1)));
+		} else if (preg_match('/^\d+$/', $match[2])) {
+			wow_item_cache_item(intval($match[2]));
+		} else {
+			wow_item_cache_item(wow_item_search(str_replace("\\'", "'", $match[2]), false));
 		}
 	}
-
-	return "[item$tag$id:$q]$text[/item$tag]";
 }
 
-function wow_item_bbcode_second_pass($text, $uid) {
-	global $wibpd;
-
+function wow_item_bbcode_second_pass($text, $bbcode_tpl) {
+	return $text;
 }

@@ -74,21 +74,24 @@
 
 		if (!($lines = file("http://wow.allakhazam.com/itemlist.xml"))) die_text("Failure reading item list from Allakhazam", __LINE__);
 
-		$rows = array("(0, '00index', NULL, CURRENT_TIMESTAMP())");
+		$rows = array("(0, '00index', NULL)");
 
 		foreach ($lines as $line) if (preg_match('#<wowitem\s+name="([^"]+)"\s+id="(\d+)"\s*/>#', $line, $match) && $match[1]{0} != "ÿ") {
 			$id = intval($match[2]);
-			$rows[] = "($id,'" . str_replace("'", "''", $match[1]) . "'," . (in_array($id, $items) ? "'$pending'" : "NULL") . ",NULL)";
+			$rows[] = "($id,'" . str_replace("'", "''", $match[1]) . "'," . (in_array($id, $items) ? "'$pending')" : "NULL)");
 		}
 
-		$sql = "INSERT INTO " . WOW_ITEMS_TABLE . " (item_id, item_name, item_desc, item_stamp)
+		$sql = "INSERT INTO " . WOW_ITEMS_TABLE . " (item_id, item_name, item_desc)
 		        VALUES " . implode(",", $rows);
 
 		if (!($db->sql_query($sql, END_TRANSACTION))) die_text($db->sql_error(), __LINE__);
 	}
 
-	// Make sure we're not duplicating effort.
-	$items = array_unique($items);
+	// Only cache items we don't already have.
+	if (!($result = $db->sql_query("SELECT item_id FROM " . WOW_ITEMS_TABLE . " WHERE item_icon IS NULL"))) die_text($db->sql_error(), __LINE__);
+	if (!($result = $db->sql_fetchrowset($result))) die_text($db->sql_error(), __LINE__);
+	foreach ($result as $k => $v) $result[$k] = $v['item_id'];
+	$items = array_intersect(array_unique($items), $result);
 
 	$rows = array();
 
@@ -114,11 +117,11 @@
 		if (!preg_match('#<quality>(.+?)</quality>#', $xml, $match)) continue;
 		$quality = intval($match[1]);
 
-		$rows[] = "($id,'"  . str_replace("'", "''", $name) . "',$quality,'" . str_replace("'", "''", $icon) . "',CURRENT_TIMESTAMP(),'" . str_replace("'", "''", wow_item_clean($desc)) . "')";
+		$rows[] = "($id,'"  . str_replace("'", "''", $name) . "',$quality,'" . str_replace("'", "''", $icon) . "','" . str_replace("'", "''", wow_item_clean($desc)) . "')";
 	}
 
 	if (count($rows) > 0) {
-		$sql = "REPLACE INTO " . WOW_ITEMS_TABLE . " (item_id,item_name,item_quality,item_icon,item_stamp,item_desc)
+		$sql = "REPLACE INTO " . WOW_ITEMS_TABLE . " (item_id,item_name,item_quality,item_icon,item_desc)
 		        VALUES " . implode(",", $rows);
 
 		if (!$db->sql_query($sql)) die_text($db->sql_error(), __LINE__);
