@@ -39,7 +39,7 @@ function wow_item_search($search) {
 
 	$params = preg_match('/^([^\(\)]+)(?:\(()\))?/$', $search);
 	$params[0] = trim($params[0]);
-	$sql = "SELECT item_id FROM " . WOW_ITEMS_TABLE . "WHERE item_name LIKE '%{$params[0]}%'";
+	$sql = "SELECT item_id FROM " . WOW_ITEMS_TABLE . " WHERE item_name LIKE '%{$params[0]}%'";
 
 	if (isset($params[1])) {
 		$params[1] = trim($params[1]);
@@ -87,28 +87,48 @@ function wow_item_get_info($itemnum) {
 	if (!is_numeric($itemnum)) return false;
 	if (!($result = $db->sql_query("SELECT * FROM " . WOW_ITEMS_TABLE . " WHERE item_id = " . intval($itemnum)))) return false;
 	if (!($result = $db->sql_fetchrow($result))) return false;
-	return $result;
+	return $result[0];
 }
 
+// Wow_Item_Bbode_Pass_Data -- I tried to prevent having this
+// global, but frankly, it was just too much trouble.
+$wibpd = array('uid' => "", 'list' => array());
+
 function wow_item_bbcode_first_pass($text, $uid) {
-	$result = $text;
+	global $wibpd;
 
-	$callback = create_function('$matches', '
-		$uid = ' . $uid . '; // This is the *only* reason we have to use create_function.  Arrgh!
-
-		if ($matches[2]
-		$found = wow_item_search($matches[3]);
-		if (!$found || count($found) != 1) {
-			$item_quality = 1;
-		} else {
-			$found = 
-			$item_id = $found[0]['item_id'];
-			$item_quality = $found[0]['item_quality']
-		}
-	');
-
+	$wibpd['uid'] = $uid;
 	preg_replace_callback('#\[item((?:desc)?)((?:=\d+)?)\]([^\[]+)\[/item(?:desc)?\]#is', $callback, $text);
 }
 
+function wow_item_bbcode_first_pass_callback($matches) {
+	global $wibpd;
+
+	$tag = $matches[1];
+	$id = "";
+	$q = 1;
+	$text = $matches[3];
+
+	if ($matches[2]) {
+		$id = $matches[2];
+		$info = wow_item_get_info($matches[2]);
+		if ($info) $q = $info['item_quality'];
+	} else if (preg_match('/^\d+$/', $matches[3])) {
+		$info = wow_item_get_info($matches[3]);
+		if ($info) $q = $info['item_quality'];
+	} else {
+		$info = wow_item_search($matches[3]);
+		if ($info && count($info) == 1) {
+			$id = ":" . $info[0];
+			$info = wow_item_get_info($info[0]);
+			if ($info) $q = $info['item_quality'];
+		}
+	}
+
+	return "[item$tag$id:$q]$text[/item$tag]";
+}
+
 function wow_item_bbcode_second_pass($text, $uid) {
+	global $wibpd;
+
 }

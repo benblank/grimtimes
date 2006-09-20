@@ -11,6 +11,7 @@
 	$phpbb_root_path = './';
 	include($phpbb_root_path . 'extension.inc');
 	include($phpbb_root_path . 'config.'.$phpEx);
+	include($phpbb_root_path . 'includes/constants.'.$phpEx);
 	include($phpbb_root_path . 'includes/db.'.$phpEx);
 	unset($dbpasswd);
 
@@ -48,10 +49,10 @@
 	}
 
 	if (isset($req)) {
-		if (isset($req['item']) && preg_match('/^-?\d+$/', $req['item'])) $items[] = intval($req['item']);
-		if (isset($req['items'])) foreach ($req['items'] as $v) if (preg_match('/^-?\d+$/', $v)) $items[] = intval($v);
+		if (isset($req['item']) && preg_match('/^\d+$/', $req['item'])) $items[] = intval($req['item']);
+		if (isset($req['items'])) foreach ($req['items'] as $v) if (preg_match('/^\d+$/', $v)) $items[] = intval($v);
 	} else if (isset($argc)) {
-		for ($i = 1; $i < $argc - 1; $i++) if (preg_match('/^-?\d+$/', $argv[$i])) $items[] = intval($argv[$i]);
+		for ($i = 1; $i < $argc - 1; $i++) if (preg_match('/^\d+$/', $argv[$i])) $items[] = intval($argv[$i]);
 	} else {
 		die_text("Could not find POST request, GET request, or command line parameters", __LINE__);
 	}
@@ -59,21 +60,17 @@
 	if (count($items) == 0) die_text("No items specified; make sure you are using item IDs", __LINE__);
 
 	// Item "zero" means rebuild the ID <-> Name mapping
-	if (in_array(0, $items) || in_array(-1, $items)) {
-		// Item -1 is the Big Cache, so don't bother collecting the names of cached items.
-		if (!in_array(-1, $items)) {
-			// Get a list of which items need to be re-cached.  We use
-			// item_desc instead of item_stamp because the latter is used
-			// to track when the mapping was last updated.
-			$result = $db->sql_query("SELECT item_id FROM " . WOW_ITEMS_TABLE . " WHERE item_desc IS NOT NULL", BEGIN_TRANSACTION);
-			if (!$result) die_text($db->sql_error(), __LINE__);
-			$result = $db->sql_fetchrowset($result);
-			if ($result) foreach ($result as $v) $items[] = intval($v['item_id']);
-		}
+	if (in_array(0, $items)) {
+		// Get a list of which items need to be re-cached.  We use
+		// item_desc instead of item_stamp because the latter is used
+		// to track when the mapping was last updated.
+		$result = $db->sql_query("SELECT item_id FROM " . WOW_ITEMS_TABLE . " WHERE item_desc IS NOT NULL", BEGIN_TRANSACTION);
+		if (!$result) die_text($db->sql_error(), __LINE__);
+		$result = $db->sql_fetchrowset($result);
+		if ($result) foreach ($result as $v) $items[] = intval($v['item_id']);
 
 		// And here's why we're doing this transactionally.  Ouch!
-		// Pass BEGIN_TRANSACTION again, as the first section is skipped on item -1...
-		if (!$db->sql_query("TRUNCATE " . WOW_ITEMS_TABLE, BEGIN_TRANSACTION)) die_text($db->sql_error(), __LINE__);
+		if (!$db->sql_query("TRUNCATE " . WOW_ITEMS_TABLE)) die_text($db->sql_error(), __LINE__);
 
 		if (!($lines = file("http://wow.allakhazam.com/itemlist.xml"))) die_text("Failure reading item list from Allakhazam", __LINE__);
 
@@ -90,14 +87,8 @@
 		if (!($db->sql_query($sql, END_TRANSACTION))) die_text($db->sql_error(), __LINE__);
 	}
 
-	if (!in_array(-1, $items)) {
-		// Make sure we're not duplicating effort.
-		$items = array_unique($items);
-	} else {
-		// Get the Big Cache list.
-		if (!($result = $db->sql_query("SELECT item_id FROM " . WOW_ITEMS_TABLE))) die_text($db->sql_error(), __LINE__);
-		if (!($result = $db->sql_fetchrowset($result)
-	}
+	// Make sure we're not duplicating effort.
+	$items = array_unique($items);
 
 	$rows = array();
 
