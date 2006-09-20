@@ -72,10 +72,10 @@
 CREATE TABLE phpbb_wow_items (
   item_id MEDIUMINT UNSIGNED NOT NULL,
   item_name TINYTEXT NOT NULL,
-  item_quality TINYINT UNSIGNED DEFAULT NULL,
-  item_icon TINYTEXT DEFAULT NULL,
-  item_stamp TIMESTAMP DEFAULT NULL,
-  item_desc TEXT DEFAULT NULL,
+  item_quality TINYINT UNSIGNED NULL,
+  item_icon TINYTEXT NULL,
+  item_stamp TIMESTAMP NULL,
+  item_desc TEXT NULL,
   PRIMARY KEY (item_id)
 );
 
@@ -137,22 +137,6 @@ $EMBB_values = array(''
 #
 
 , 'item', 'item=', 'itemdesc'
-
-#
-#-----[ FIND ]------------------------------------------
-#
-
-	$bbcode_tpl['email'] = str_replace('{EMAIL}', '\\1', $bbcode_tpl['email']);
-
-#
-#-----[ AFTER, ADD ]------------------------------------------
-#
-
-	// BEGIN -- Grim Times: WoW Items for phpBB
-
-	$bbcode_tpl['wow_item1'] = str_replace('{}', '\\1', $bbcode_tpl['wow_item1']);
-
-	// END -- Grim Times: WoW Items for phpBB
 
 #
 #-----[ FIND ]------------------------------------------
