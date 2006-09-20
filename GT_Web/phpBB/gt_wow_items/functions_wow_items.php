@@ -70,13 +70,16 @@ function wow_item_cache_item($item) {
 	$script_name = ($script_name == '') ? $script_name : '/' . $script_name;
 
 	if (gettype($item) == "array") {
-		// Do array stuff
+		$query = array();
+		foreach ($item as $v) if (is_numeric($v)) $query[] = "items[]=" . intval($v);
+		if (count($array) == 0) return false;
+		$query = implode("&", array_unique($query));
 	} else if (is_numeric($item)) {
-		// Do numeric stuff
+		$query = "item=" . intval($item);
 	} else return false;
 
 	// The wow_items_cache script uses ignore_user_abort() to "asynchonously" cache items in the background.
-	$handle = fopen($server_protocol . $server_name . $server_port . $script_name . "wow_items_cache.$phpEx?item=$item", 'r');
+	$handle = fopen($server_protocol . $server_name . $server_port . $script_name . "wow_items_cache.$phpEx?$query", 'r');
 	fclose($handle);
 
 	// We may not know whether it worked or not, but we successfully made the request.
@@ -92,12 +95,13 @@ function wow_item_get_info($itemnum) {
 
 // Wow_Item_Bbode_Pass_Data -- I tried to prevent having this
 // global, but frankly, it was just too much trouble.
-$wibpd = array('uid' => "", 'list' => array());
+$wibpd = array();
 
 function wow_item_bbcode_first_pass($text, $uid) {
 	global $wibpd;
 
 	$wibpd['uid'] = $uid;
+	$wibpd['list'] = array();
 	preg_replace_callback('#\[item((?:desc)?)((?:=\d+)?)\]([^\[]+)\[/item(?:desc)?\]#is', $callback, $text);
 }
 
@@ -112,7 +116,10 @@ function wow_item_bbcode_first_pass_callback($matches) {
 	if ($matches[2]) {
 		$id = $matches[2];
 		$info = wow_item_get_info($matches[2]);
-		if ($info) $q = $info['item_quality'];
+
+		if ($info) {
+			$q = $info['item_quality'];
+		}
 	} else if (preg_match('/^\d+$/', $matches[3])) {
 		$info = wow_item_get_info($matches[3]);
 		if ($info) $q = $info['item_quality'];
