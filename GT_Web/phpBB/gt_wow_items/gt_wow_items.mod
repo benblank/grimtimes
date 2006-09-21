@@ -18,7 +18,9 @@
 ##     templates/subSilver/overall_header.tpl
 ##     templates/subSilver/posting_body.tpl
 ##
-## Included Files: 3
+## Included Files: 6
+##     admin_wow_items.php
+##     admin_wow_items.tpl
 ##     functions_wow_items.php
 ##     wow_items.css
 ##     wow_items.js
@@ -87,6 +89,8 @@ CREATE TABLE phpbb_wow_items (
 #-----[ COPY ]------------------------------------------
 #
 
+Copy admin_wow_items.php to admin/admin_wow_items.php
+Copy admin_wow_items.tpl to templates/subSilver/admin/wow_items.tpl
 Copy functions_wow_items.php to includes/functions_wow_items.php
 Copy wow_items.css to templates/subSilver/wow_items.css
 Copy wow_items.js to templates/subSilver/wow_items.js
@@ -126,10 +130,8 @@ $EMBB_widths = array(''
 #
 #-----[ IN-LINE AFTER, ADD ]---------------------------------------------------
 #
-# Rule of thumb seems to be 25 + 5/char?
-#
 
-, '45', '50', '65'
+, '39', '48', '66'
 
 #
 #-----[ IN-LINE FIND ]---------------------------------------------------
@@ -200,6 +202,37 @@ $lang['bbcode_help']['itemdesc'] = "Item (in-line)";
 #-----[ BEFORE, ADD ]------------------------------------------
 #
 
+// WoW Items admin page
+$lang['wow_items_admin'] = 'WoW Items';
+$lang['wow_items_admin_text'] = 'From this page you can perform various options on the WoW item database used for this forum.  The most important is the Update option, which updates the cached list of <a href="http://wow.allakhazam.com/">Allakhazam\'s</a> items and ensures the cached items are up to date.  You may want to do this every few days when a patch has just been released, but probably no more than once a week otherwise.  You can also choose to pre-load commonly used items to ensure they are available when your users need them.  (Non-precached items are loaded on an as-needed basis.)';
+$lang['wow_items_admin_title'] = 'WoW Item Database Management';
+$lang['wow_items_cache_available'] = 'items available in <a href="http://wow.allakhazam.com/">Allakhazam\'s</a> database';
+$lang['wow_items_cache_current'] = 'items currently in the local cache';
+$lang['wow_items_cache_stats'] = 'WoW Item Database Stats';
+$lang['wow_items_cache_update'] = 'Update Cache';
+$lang['wow_items_cache_updating'] = "&lt;updating&gt;";
+$lang['wow_items_precache_count'] = 'Items in Set';
+$lang['wow_items_precache_partial'] = "Partial";
+$lang['wow_items_precache_set'] = 'Set Name';
+$lang['wow_items_precache_status'] = 'Cached?';
+$lang['wow_items_precache_submit'] = 'Cache Selected Sets';
+
+$lang['wow_items_status_precache'] = 'Item set "{SET}" has been cached.';
+$lang['wow_items_status_update'] = 'Cache update requested.  This operation can take several minutes to complete, depending on how many items you currently have cached.  Until the update completes, item tooltips will display "uncached or invalid".';
+
+$lang['wow_items_set']['pvp_ab'] = 'PvP: Defilers faction rewards';
+$lang['wow_items_set']['pvp_av'] = 'PvP: Frostwolf faction rewards';
+$lang['wow_items_set']['pvp_honor'] = 'PvP: Honor rank rewards';
+$lang['wow_items_set']['pvp_wsg'] = 'PvP: Warsong faction rewards';
+$lang['wow_items_set']['tier0'] = 'Tier 0 (a.k.a. Dungeon Set 1)';
+$lang['wow_items_set']['tier0_5'] = 'Tier 0.5 (a.k.a. Dungeon Set 2)';
+$lang['wow_items_set']['tier1'] = 'Tier 1';
+$lang['wow_items_set']['tier2'] = 'Tier 2';
+$lang['wow_items_set']['tier3'] = 'Tier 3';
+$lang['wow_items_set']['zg_loot'] = 'Zul\'Gurub loot';
+$lang['wow_items_set']['zg_quest'] = 'Zul\'Gurub quest rewards';
+
+// WoW Items display
 $lang['wow_items_badid'] = 'There does not appear to be an item with ID {ID}.';
 $lang['wow_items_multi'] = 'The search "{SEARCH}" matched {COUNT} items:';
 $lang['wow_items_none'] = 'The search "{SEARCH}" did not match any items.';
@@ -221,7 +254,7 @@ templates/subSilver/bbcode.tpl
 #-----[ AFTER, ADD ]------------------------------------------
 #
 
-<!-- BEGIN item -->{ITEMDIV}<a class="quality{QUALITY}" onmouseover="wow_item_hover(event,'{ID}')" onmouseover="wow_item_unhover()" target="_blank" href="{URL}">{TEXT}</a><!-- END item -->
+<!-- BEGIN item -->{ITEMDIV}<a class="quality{QUALITY}" onmouseover="wow_item_hover(event,'{ID}')" onmouseout="wow_item_unhover()" target="_blank" href="{URL}">[{TEXT}]</a><!-- END item -->
 
 <!-- BEGIN itemdiv --><div{IDATTR} style="display:none">{ITEMDESC}</div><!-- END itemdiv -->
 

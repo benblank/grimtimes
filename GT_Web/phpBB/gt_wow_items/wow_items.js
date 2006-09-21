@@ -3,20 +3,20 @@ function wow_item_hover(event,id) {
 	var item = document.getElementById("item"+id);
 	if (item == null) return;
 
+	hover.innerHTML = item.innerHTML;
+
 	var x, y;
 	if (document.all) {
-		x = event.clientX + document.body.scrollLeft - 150;
-		y = event.clientY + document.body.scrollTop - 200;
+		x = event.clientX + document.body.scrollLeft + 10;
+		y = event.clientY + document.body.scrollTop;
 	} else {
-		x = event.pageX - 145;
-		y = event.pageY - 200;
+		x = event.pageX + 10;
+		y = event.pageY;
 	}
 
 	hover.style.left = x + "px";
 	hover.style.top = y + "px";
 	hover.style.display = "block";
-
-	hover.innerHTML = item.innerHTML;
 }
 
 function wow_item_unhover() {

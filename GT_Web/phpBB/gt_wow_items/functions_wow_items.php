@@ -28,7 +28,7 @@ function wow_item_clean($html) {
 		$wow_item_clean['#(<span class="itemeffect)link#'] = '\1';
 		$wow_item_clean['#(<a[^>]*) class="itemeffectlink"#'] = '\1';
 		$wow_item_clean['#(<a[^>]*)><span class="goldtext">(.+)</span></a>#'] = '\1 class="itemdesc">\2</a>';
-		$wow_item_clean['#<span class="akznotice">(.+)</span>#'] = '\1';
+		$wow_item_clean['#goldtext#'] = 'itemdesc';
 	}
 
 	return preg_replace(array_keys($wow_item_clean), array_values($wow_item_clean), $html);
@@ -43,16 +43,16 @@ function wow_item_search($search, $with_desc = true) {
 
 	if ($with_desc && isset($params[2])) {
 		$params[2] = str_replace("'", "''", trim($params[2]));
-		$sql .= " AND item_desc LIKE '%{$params[1]}%'";
+		$sql .= " AND item_desc LIKE '%{$params[2]}%'";
 	}
 
-	if (!($result = $db->sql_query($sql))) return array();
+	if (!($result = $db->sql_query("$sql LIMIT 20"))) return array();
 	if (!($result = $db->sql_fetchrowset($result))) return array();
 
 	foreach ($result as $k =>$v) $result[$k] = $v['item_id'];
 	sort($result);
 
-	return $result;
+	return array_values($result); // Ensure keys are 0..(n-1)
 }
 
 function wow_item_cache_map() {
@@ -87,7 +87,7 @@ function wow_item_cache_item($item) {
 		$sql = "= " . intval($item);
 	} else return false;
 
-	$db->sql_query("UPDATE " . WOW_ITEMS_TABLE . " SET item_desc='" . str_replace("'", "''", $lang['wow_items_pending']) . "' WHERE item_desc IS NULL AND item_id $sql");
+	$db->sql_query("UPDATE " . WOW_ITEMS_TABLE . " SET item_desc='" . str_replace("'", "''", '<div class="wowitem">' . $lang['wow_items_pending'] . '</div>') . "' WHERE item_desc IS NULL AND item_id $sql");
 
 	// The wow_items_cache script uses ignore_user_abort() to "asynchonously" cache items in the background.
 	$handle = fopen($server_protocol . $server_name . $server_port . $script_name . "/wow_items_cache.$phpEx?$query", 'r');
@@ -103,7 +103,7 @@ function wow_item_get_info($itemnum) {
 	if (!is_numeric($itemnum)) return false;
 	if (!($result = $db->sql_query("SELECT * FROM " . WOW_ITEMS_TABLE . " WHERE item_id = " . intval($itemnum)))) return false;
 	if (!($result = $db->sql_fetchrow($result))) return false;
-	return $result[0];
+	return $result;
 }
 
 function wow_item_bbcode_first_pass($text) {
@@ -148,7 +148,7 @@ function wow_item_bbcode_second_pass_callback($match) {
 
 	if ($id && ($info = wow_item_get_info($id))) {
 		$url = "http://wow.allakhazam.com/db/item.html?witem=$id";
-		$itemdesc = $info['item_desc'] ? $info['item_desc'] : $lang['wow_items_pending'];
+		$itemdesc = $info['item_desc'] ? $info['item_desc'] : ('<div class="wowitem">' . $lang['wow_items_pending'] . '</div>');
 		$quality = $info['item_quality'] ? $info['item_quality'] : 99;
 		if ($match[2]) $text = $match[3];
 		else $text = $info['item_name'];
@@ -156,22 +156,22 @@ function wow_item_bbcode_second_pass_callback($match) {
 		$text = $match[3];
 		$url = "http://wow.allakhazam.com/search.html?q=" . urlencode($text);
 		$id = md5($text);
-		$quality = 1;
+		$quality = 2;
 		$itemdesc = str_replace(array("{SEARCH}", "{COUNT}"), array($text, count($search)), $lang['wow_items_multi']) . "<br />";
-		foreach ($search as $v) $itemdesc .= "<br />[item]{$v}[/item]";
-		$itemdesc = wow_item_bbcode_second_pass($itemdesc); // A dirty trick, but...
+		foreach ($search as $v) $itemdesc .= "<br />[item]{$v}[/item] (item $v)";
+		$itemdesc = '<div class="wowitem">' . wow_item_bbcode_second_pass($itemdesc) . '</div>';
 	} else if ($id) {
 		// An item ID was found, but it did not return data.
 		$text = $match[3];
 		$url = "http://wow.allakhazam.com/search.html?q=" . urlencode($text);
 		$quality = 99;
-		$itemdesc = str_replace("{ID}", $id, $lang['wow_item_badid']);
+		$itemdesc = '<div class="wowitem">' . str_replace("{ID}", $id, $lang['wow_items_badid']) . '</div>';
 	} else {
 		$text = $match[3];
 		$url = "http://wow.allakhazam.com/search.html?q=" . urlencode($text);
 		$id = md5($text);
 		$quality = 99;
-		$itemdesc = str_replace("{SEARCH}", $text, $lang['wow_item_none']);
+		$itemdesc = '<div class="wowitem">' . str_replace("{SEARCH}", $text, $lang['wow_items_none']) . '</div>';
 	}
 
 	if (!in_array($id, $wibspcd)) {

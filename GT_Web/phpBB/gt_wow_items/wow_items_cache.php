@@ -78,7 +78,7 @@
 
 		foreach ($lines as $line) if (preg_match('#<wowitem\s+name="([^"]+)"\s+id="(\d+)"\s*/>#', $line, $match) && $match[1]{0} != "ÿ") {
 			$id = intval($match[2]);
-			$rows[] = "($id,'" . str_replace("'", "''", $match[1]) . "'," . (in_array($id, $items) ? "'$pending')" : "NULL)");
+			$rows[] = "($id,'" . str_replace("'", "''", $match[1]) . "'," . (in_array($id, $items) ? "'<div class=\"wowitem\">$pending</div>')" : "NULL)");
 		}
 
 		$sql = "INSERT INTO " . WOW_ITEMS_TABLE . " (item_id, item_name, item_desc)
@@ -126,3 +126,4 @@
 
 		if (!$db->sql_query($sql)) die_text($db->sql_error(), __LINE__);
 	}
+?>
