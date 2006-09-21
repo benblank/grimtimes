@@ -15,12 +15,13 @@
 ##     includes/bbcode.php
 ##     language/lang_english/lang_main.php
 ##     templates/subSilver/bbcode.tpl
+##     templates/subSilver/overall_header.tpl
 ##     templates/subSilver/posting_body.tpl
-##     templates/subSilver/simple_header.tpl
 ##
 ## Included Files: 3
 ##     functions_wow_items.php
 ##     wow_items.css
+##     wow_items.js
 ##     wow_items_cache.php
 ##
 ## License: http://opensource.org/licenses/bsd-license.php The BSD License
@@ -88,6 +89,7 @@ CREATE TABLE phpbb_wow_items (
 
 Copy functions_wow_items.php to includes/functions_wow_items.php
 Copy wow_items.css to templates/subSilver/wow_items.css
+Copy wow_items.js to templates/subSilver/wow_items.js
 Copy wow_items_cache.php to wow_items_cache.php
 
 #
@@ -151,7 +153,7 @@ $EMBB_values = array(''
 #-----[ AFTER, ADD ]------------------------------------------
 #
 
-	$text = wow_item_bbcode_second_pass($text, $bbcode_tpl);
+	$text = wow_item_bbcode_second_pass($text);
 
 #
 #-----[ FIND ]------------------------------------------
@@ -187,6 +189,23 @@ $lang['bbcode_help']['item='] = "Item link (by item ref, with link text)";
 $lang['bbcode_help']['itemdesc'] = "Item (in-line)";
 
 #
+#-----[ FIND ]---------------------------------
+#
+
+//
+// That's all, Folks!
+// -------------------------------------------------
+
+#
+#-----[ BEFORE, ADD ]------------------------------------------
+#
+
+$lang['wow_items_badid'] = 'There does not appear to be an item with ID {ID}.';
+$lang['wow_items_multi'] = 'The search "{SEARCH}" matched {COUNT} items:';
+$lang['wow_items_none'] = 'The search "{SEARCH}" did not match any items.';
+$lang['wow_items_pending'] = 'This item has not yet been cached.  It is possible that Allakhazam is down or that the item ID is invalid.  Please try again later.';
+
+#
 #-----[ OPEN ]------------------------------------------
 #
 
@@ -202,10 +221,12 @@ templates/subSilver/bbcode.tpl
 #-----[ AFTER, ADD ]------------------------------------------
 #
 
-<!-- BEGIN item --><div id="item{ID}" style="display:none">{ITEMDIV}</div><a class="quality{QUALITY}" onmouseover="wow_item_hover('{ID}')" onmouseover="wow_item_unhover()" target="_blank" href="{URL}">{TEXT}</a><!-- END item -->
+<!-- BEGIN item -->{ITEMDIV}<a class="quality{QUALITY}" onmouseover="wow_item_hover(event,'{ID}')" onmouseover="wow_item_unhover()" target="_blank" href="{URL}">{TEXT}</a><!-- END item -->
+
+<!-- BEGIN itemdiv --><div{IDATTR} style="display:none">{ITEMDESC}</div><!-- END itemdiv -->
 
 <!-- BEGIN itemdesc --></span>
-<div id="{ID}">{ITEMDIV}</div>
+<div{IDATTR}>{ITEMDESC}</div>
 <span class="postbody"><!-- END itemdesc -->
 
 #
@@ -236,7 +257,7 @@ bbtags = new Array(
 #-----[ OPEN ]------------------------------------------
 #
 
-templates/subSilver/simple_header.tpl
+templates/subSilver/overall_header.tpl
 
 #
 #-----[ FIND ]------------------------------------------
@@ -249,6 +270,7 @@ link rel="stylesheet" href="templates/subSilver/{T_HEAD_STYLESHEET}" type="text/
 #
 
 <link rel="stylesheet" href="templates/subSilver/wow_items.css" type="text/css" />
+<script src="templates/subSilver/wow_items.js" type="text/javascript"></script>
 
 #
 #-----[ SAVE/CLOSE ALL FILES ]------------------------------------------
