@@ -220,10 +220,14 @@ $lang['wow_items_precache_submit'] = 'Cache Selected Sets';
 $lang['wow_items_status_precache'] = 'Item set "{SET}" has been cached.';
 $lang['wow_items_status_update'] = 'Cache update requested.  This operation can take several minutes to complete, depending on how many items you currently have cached.  Until the update completes, item tooltips will display "uncached or invalid".';
 
-$lang['wow_items_set']['pvp_ab'] = 'PvP: Defilers faction rewards';
-$lang['wow_items_set']['pvp_av'] = 'PvP: Frostwolf faction rewards';
-$lang['wow_items_set']['pvp_honor'] = 'PvP: Honor rank rewards';
-$lang['wow_items_set']['pvp_wsg'] = 'PvP: Warsong faction rewards';
+$lang['wow_items_set']['pvp_a_ab'] = 'Alliance PvP: League of Arathor faction rewards (AB)';
+$lang['wow_items_set']['pvp_a_av'] = 'Alliance PvP: Stormpike faction rewards (AV)';
+$lang['wow_items_set']['pvp_a_honor'] = 'Alliance PvP: Honor rank rewards';
+$lang['wow_items_set']['pvp_a_wsg'] = 'Alliance PvP: Silverwing faction rewards (WSG)';
+$lang['wow_items_set']['pvp_h_ab'] = 'Horde PvP: Defilers faction rewards (AB)';
+$lang['wow_items_set']['pvp_h_av'] = 'Horde PvP: Frostwolf faction rewards (AV)';
+$lang['wow_items_set']['pvp_h_honor'] = 'Horde PvP: Honor rank rewards';
+$lang['wow_items_set']['pvp_h_wsg'] = 'Horde PvP: Warsong faction rewards (WSG)';
 $lang['wow_items_set']['tier0'] = 'Tier 0 (a.k.a. Dungeon Set 1)';
 $lang['wow_items_set']['tier0_5'] = 'Tier 0.5 (a.k.a. Dungeon Set 2)';
 $lang['wow_items_set']['tier1'] = 'Tier 1';
@@ -304,6 +308,16 @@ link rel="stylesheet" href="templates/subSilver/{T_HEAD_STYLESHEET}" type="text/
 
 <link rel="stylesheet" href="templates/subSilver/wow_items.css" type="text/css" />
 <script src="templates/subSilver/wow_items.js" type="text/javascript"></script>
+
+#
+#-----[ DIY INSTRUCTIONS ]------------------------------------------
+#
+
+Before item links can be used, you must:
+Open the new "WoW Items" ACP
+Click the "Update Cache" button
+Wait for the cache to be filled (usually takes about 10 seconds, but you won't be told when it's done)
+If you like, select item sets to preload (loading too many makes recaching take longer, so don't go nuts)
 
 #
 #-----[ SAVE/CLOSE ALL FILES ]------------------------------------------
