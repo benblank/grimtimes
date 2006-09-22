@@ -48,7 +48,7 @@
 	$itemlist['tier1'] = array(
 		/* Druid   */ 16828, 16829, 16830, 16831, 16833, 16834, 16835, 16836,
 		/* Hunter  */ 16845, 16846, 16847, 16848, 16849, 16850, 16851, 16852,
-		/* Mage    */ 16795, 16796, 19797, 16798, 16799, 16800, 16801, 16802,
+		/* Mage    */ 16795, 16796, 16797, 16798, 16799, 16800, 16801, 16802,
 		/* Paladin */ 16853, 16854, 16855, 16856, 16857, 16858, 16859, 16860,
 		/* Priest  */ 16811, 16812, 16813, 16814, 16815, 16816, 16817, 16819,
 		/* Rogue   */ 16820, 16821, 16822, 16823, 16824, 16825, 16826, 16827,
@@ -73,8 +73,8 @@
 		/* Mage    */ 22496, 22497, 22498, 22499, 22500, 22501, 22502, 22503, 23062,
 		/* Paladin */ 22424, 22425, 22426, 22427, 22428, 22429, 22430, 22431, 23066,
 		/* Priest  */ 22512, 22513, 22514, 22515, 22516, 22517, 22518, 22519, 23061,
-		/* Rogue   */ 22476, 22477, 22478, 22479, 22480, 22481, 22482, 22483, // Not yet seen
-		/* Shaman  */ 22464, 22465, 22466, 22467, 22468, 22469, 22470, 22471, // Not yet seen
+		/* Rogue   */ 22476, 22477, 22478, 22479, 22480, 22481, 22482, 22483, // Ring not yet seen by Allakhazam's
+		/* Shaman  */ 22464, 22465, 22466, 22467, 22468, 22469, 22470, 22471, // Ring not yet seen by Allakhazam's
 		/* Warlock */ 22504, 22505, 22506, 22507, 22508, 22509, 22510, 22511, 23063,
 		/* Warrior */ 22416, 22417, 22418, 22419, 22420, 22421, 22422, 22423, 23059,
 	);
@@ -99,7 +99,7 @@
 		/* Shaman  */ 19606, 19607, 19608, 19609, 19828, 19829, 19830, 19956,
 		/* Warlock */ 19602, 19603, 19604, 19605, 19848, 19849, 19957, 20033,
 		/* Warrior */ 19574, 19575, 19576, 19577, 19822, 19823, 19824, 19951,
-		/* Other   */ 19948, 19949, 19950,
+		/* Other   */ 19948, 19949, 19950, // Zandalarian Hero's X
 	);
 
 	$status = array();
@@ -111,9 +111,11 @@
 		$status[] = $lang['wow_items_status_update'];
 	}
 
+	$precaching = array();
 	if (isset($HTTP_POST_VARS['precache']) && count($HTTP_POST_VARS['precache']) > 0) {
 		foreach ($HTTP_POST_VARS['precache'] as $set) {
 			wow_item_cache_item($itemlist[$set]);
+			$precaching[] = $set;
 			$status[] = str_replace("{SET}", $lang['wow_items_set'][$set], $lang['wow_items_status_precache']);
 		}
 	}
@@ -123,7 +125,7 @@
 	foreach($status as $text) $template->assign_block_vars("status", array("TEXT" => $text));
 
 	$items = array();
-	$update_items = 0;
+	$update_items = $updating ? $lang['wow_items_cache_updating'] : 0;
 	$update_cached = $updating ? $lang['wow_items_cache_updating'] : 0;
 
 	if ($result = $db->sql_query("SELECT item_id FROM " . WOW_ITEMS_TABLE))
@@ -163,12 +165,13 @@
 
 		$count = count($array);
 		$cached = count(array_intersect($array, $items));
-		$set_status = ($cached == $count) ? $lang['Yes'] : (($cached == 0) ? $lang['No'] : $lang['wow_items_precache_partial']);
+		$set_updating = $updating || in_array($set, $precaching);
+		$set_status = ($cached == $count) ? $lang['Yes'] : ($set_updating ? $lang['wow_items_cache_updating'] : (($cached == 0) ? $lang['No'] : $lang['wow_items_precache_partial']));
 
 		$template->assign_block_vars("precache", array(
 			"ROW_CLASS" => $row_class,
 
-			"SET_CHECKBOX" => '<input type="checkbox" name="precache[]"' . ($cached == $count ? ' disabled="disabled"' : '') . ' value="' . $set . '"></input>',
+			"SET_CHECKBOX" => '<input type="checkbox" name="precache[]"' . (($set_updating || ($cached == $count)) ? ' disabled="disabled"' : '') . ' value="' . $set . '"></input>',
 			"SET_NAME" => $lang['wow_items_set'][$set],
 			"SET_COUNT" => $count,
 			"SET_STATUS" => $set_status,
