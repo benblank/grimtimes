@@ -14,6 +14,7 @@ function wow_item_clean($html) {
 		$wow_item_clean['#&gt;#'] = '>';
 		$wow_item_clean['#&quot;#'] = '"';
 		$wow_item_clean['#&amp;#'] = '&';
+		$wow_item_clean['#&nbsp;#'] = ' ';
 		$wow_item_clean['#\s*(?:&nbsp;)*\s*<br\s*/>\s*(?:&nbsp;)*\s*#'] = '<br />';
 		$wow_item_clean['#[\r\n]+#'] = '';
 		$wow_item_clean['#<span class="iname"><span class="([^"]+)">(.+?)</span>(.*?)</span>#'] = '<span class="itemname \1">\2\3</span>';
@@ -60,14 +61,7 @@ function wow_item_cache_map() {
 }
 
 function wow_item_cache_item($item) {
-	global $board_config, $db, $lang, $phpEx;
-
-	// Copied from redirect() in includes/functions.php
-	$server_protocol = ($board_config['cookie_secure']) ? 'https://' : 'http://';
-	$server_name = preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['server_name']));
-	$server_port = ($board_config['server_port'] <> 80) ? ':' . trim($board_config['server_port']) : '';
-	$script_name = preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['script_path']));
-	$script_name = ($script_name == '') ? $script_name : '/' . $script_name;
+	global $db, $lang, $phpbb_root_path, $phpEx;
 
 	if (gettype($item) == "array") {
 		$query = array();
@@ -75,23 +69,24 @@ function wow_item_cache_item($item) {
 
 		$item = array_unique($item);
 		foreach ($item as $v) if (is_numeric($v)) {
-			$query[] = "items[]=" . intval($v);
+			$query[] = intval($v);
 			$sql[] = intval($v);
 		}
 		if (count($query) == 0) return false;
 
-		$query = implode("&", $query);
+		$query = implode(" ", $query);
 		$sql = "IN (" . implode(",", $sql) . ")";
 	} else if (is_numeric($item)) {
-		$query = "item=" . intval($item);
+		$query = intval($item);
 		$sql = "= " . intval($item);
 	} else return false;
 
 	$db->sql_query("UPDATE " . WOW_ITEMS_TABLE . " SET item_desc='" . str_replace("'", "''", '<div class="wowitem">' . $lang['wow_items_pending'] . '</div>') . "' WHERE item_desc IS NULL AND item_id $sql");
 
-	// The wow_items_cache script uses ignore_user_abort() to "asynchonously" cache items in the background.
-	$handle = fopen($server_protocol . $server_name . $server_port . $script_name . "/wow_items_cache.$phpEx?$query", 'r');
-	fclose($handle);
+	// The old method of using fopen+fclose did not have the desired effect on
+	// all hosts.  This should work on any *nix-based system.  (Sorry, Windows
+	// users.)
+	exec("cd $phpbb_root_path;php wow_items_cache.$phpEx $query > /dev/null &");
 
 	// We may not know whether it worked or not, but we successfully made the request.
 	return true;
@@ -107,22 +102,25 @@ function wow_item_get_info($itemnum) {
 }
 
 function wow_item_bbcode_first_pass($text) {
-	preg_match_all('#\[item(?:desc)?((?:=[1-9]\d*)?)\]([^\[]+)\[/item(?:desc)?\]#is', $text, $matches, PREG_SET_ORDER);
+	$found_items = array();
 
-	// There's no way to gather useful info ahead of time on non-cached items,
-	// so we'll cache them on the first pass and process on the second.
+	preg_match_all('#\[item(?:desc)?((?:=[1-9]\d*)?)\]([^\[]+)\[/item(?:desc)?\]#is', $text, $matches, PREG_SET_ORDER);
 	foreach($matches as $match) {
 		if ($match[1]) {
-			wow_item_cache_item(intval(substr($match[1], 1)));
+			$found_items[] = intval(substr($match[1], 1));
 		} else if (preg_match('/^[1-9]\d*$/', $match[2])) {
-			wow_item_cache_item(intval($match[2]));
+			$found_items[] = intval($match[2]);
 		} else {
 			// For items with description matches (e.g. "Eldre'Thalas
 			// (Warlock)"), the part in parentheses is ignored during the first
 			// pass, to ensure that the data is available to the second pass.
-			wow_item_cache_item(wow_item_search(str_replace("\\'", "'", $match[2]), false));
+			$found_items = array_merge($found_items, wow_item_search(str_replace("\\'", "'", $match[2]), false));
 		}
 	}
+
+	// There's no way to gather useful info ahead of time on non-cached items,
+	// so we'll cache them on the first pass and process on the second.
+	wow_item_cache_item($found_items);
 }
 
 function wow_item_bbcode_second_pass($text) {
@@ -150,7 +148,8 @@ function wow_item_bbcode_second_pass_callback($match) {
 		$url = "http://wow.allakhazam.com/db/item.html?witem=$id";
 		$itemdesc = $info['item_desc'] ? $info['item_desc'] : ('<div class="wowitem">' . $lang['wow_items_pending'] . '</div>');
 		$quality = $info['item_quality'] ? $info['item_quality'] : 99;
-		if ($match[2]) $text = $match[3];
+		if (isset($search)) $text = $info['item_name'] . ' ' . preg_replace('/^.*(\([^\(\)]+\))/', '\1', $match[3]);
+		else if ($match[2]) $text = $match[3];
 		else $text = $info['item_name'];
 	} else if (count($search) > 1) {
 		$text = $match[3];

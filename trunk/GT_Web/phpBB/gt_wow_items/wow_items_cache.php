@@ -28,6 +28,18 @@
 		die($msg . " on line " . $line);
 	}
 
+	function url($url) {
+		$result = @file($url);
+		if (false !== $result) return $result;
+
+		$curl = curl_init($url);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+		$result = curl_exec($curl);
+		curl_close($curl);
+
+		return explode("\n", $result);
+	}
+
 	$items = array();
 
 	if (isset($_POST) && (isset($_POST['item']) || isset($_POST['items']))) {
@@ -52,7 +64,7 @@
 		if (isset($req['item']) && preg_match('/^\d+$/', $req['item'])) $items[] = intval($req['item']);
 		if (isset($req['items'])) foreach ($req['items'] as $v) if (preg_match('/^\d+$/', $v)) $items[] = intval($v);
 	} else if (isset($argc)) {
-		for ($i = 1; $i < $argc - 1; $i++) if (preg_match('/^\d+$/', $argv[$i])) $items[] = intval($argv[$i]);
+		for ($i = 1; $i < $argc; $i++) if (preg_match('/^\d+$/', $argv[$i])) $items[] = intval($argv[$i]);
 	} else {
 		die_text("Could not find POST request, GET request, or command line parameters", __LINE__);
 	}
@@ -72,7 +84,7 @@
 		// And here's why we're doing this transactionally.  Ouch!
 		if (!$db->sql_query("TRUNCATE " . WOW_ITEMS_TABLE)) die_text($db->sql_error(), __LINE__);
 
-		if (!($lines = file("http://wow.allakhazam.com/itemlist.xml"))) die_text("Failure reading item list from Allakhazam", __LINE__);
+		if (!($lines = url("http://wow.allakhazam.com/itemlist.xml"))) die_text("Failure reading item list from Allakhazam", __LINE__);
 
 		$rows = array("(0, '00index', NULL)");
 
@@ -100,7 +112,7 @@
 	foreach ($items as $id) {
 		if ($id == 0) continue; // Ignore item "zero".
 
-		if (!($lines = file("http://wow.allakhazam.com/dev/wow/item-xml.pl?witem=$id"))) continue;
+		if (!($lines = url("http://wow.allakhazam.com/dev/wow/item-xml.pl?witem=$id"))) continue;
 		$xml = implode("", $lines);
 
 		if (!preg_match('#<id>(\d+)</id>#', $xml, $match) || $match[1] != $id) continue;
