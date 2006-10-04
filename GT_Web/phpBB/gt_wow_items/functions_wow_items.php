@@ -61,7 +61,15 @@ function wow_item_cache_map() {
 }
 
 function wow_item_cache_item($item) {
-	global $db, $lang, $phpbb_root_path, $phpEx;
+	global $board_config, $db, $lang, $phpbb_root_path, $phpEx;
+
+	// Copied from redirect() in includes/functions.php
+	$server_protocol = ($board_config['cookie_secure']) ? 'https://' : 'http://';
+	$server_name = preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['server_name']));
+	$server_port = ($board_config['server_port'] <> 80) ? ':' . trim($board_config['server_port']) : '';
+	$script_path = preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['script_path']));
+	$script_path = ($script_path == '') ? $script_path : '/' . $script_path;
+	$url = "$server_protocol$server_name$server_port$script_path/wow_items_cache.$phpEx";
 
 	if (gettype($item) == "array") {
 		$query = array();
@@ -69,15 +77,15 @@ function wow_item_cache_item($item) {
 
 		$item = array_unique($item);
 		foreach ($item as $v) if (is_numeric($v)) {
-			$query[] = intval($v);
+			$query[] = "items[]=" . intval($v);
 			$sql[] = intval($v);
 		}
 		if (count($query) == 0) return false;
 
-		$query = implode(" ", $query);
+		$query = implode("\\&", $query);
 		$sql = "IN (" . implode(",", $sql) . ")";
 	} else if (is_numeric($item)) {
-		$query = intval($item);
+		$query = "item=" . intval($item);
 		$sql = "= " . intval($item);
 	} else return false;
 
@@ -86,7 +94,7 @@ function wow_item_cache_item($item) {
 	// The old method of using fopen+fclose did not have the desired effect on
 	// all hosts.  This should work on any *nix-based system.  (Sorry, Windows
 	// users.)
-	exec("cd $phpbb_root_path;php wow_items_cache.$phpEx $query > /dev/null &");
+	exec("cd $phpbb_root_path;wget -b --spider -o /dev/null $url?$query");
 
 	// We may not know whether it worked or not, but we successfully made the request.
 	return true;
@@ -148,7 +156,7 @@ function wow_item_bbcode_second_pass_callback($match) {
 		$url = "http://wow.allakhazam.com/db/item.html?witem=$id";
 		$itemdesc = $info['item_desc'] ? $info['item_desc'] : ('<div class="wowitem">' . $lang['wow_items_pending'] . '</div>');
 		$quality = $info['item_quality'] ? $info['item_quality'] : 99;
-		if (isset($search)) $text = $info['item_name'] . ' ' . preg_replace('/^.*(\([^\(\)]+\))/', '\1', $match[3]);
+		if (false !== strstr($match[3], "(")) $text = $info['item_name'] . ' ' . preg_replace('/^.*(\([^\(\)]+\))/', '\1', $match[3]);
 		else if ($match[2]) $text = $match[3];
 		else $text = $info['item_name'];
 	} else if (count($search) > 1) {
