@@ -88,7 +88,7 @@
 
 		$rows = array("(0, '00index', NULL)");
 
-		foreach ($lines as $line) if (preg_match('#<wowitem\s+name="([^"]+)"\s+id="(\d+)"\s*/>#', $line, $match) && $match[1]{0} != "ÿ") {
+		foreach ($lines as $line) if (preg_match('#<wowitem\s+name="([^"]+)"\s+id="(\d+)"\s*/>#', $line, $match) && $match[1]{0} != "\xFF") {
 			$id = intval($match[2]);
 			$rows[] = "($id,'" . str_replace("'", "''", $match[1]) . "'," . (in_array($id, $items) ? "'<div class=\"wowitem\">$pending</div>')" : "NULL)");
 		}
@@ -105,7 +105,8 @@
 	foreach ($result as $k => $v) $result[$k] = $v['item_id'];
 	$items = array_intersect(array_unique($items), $result);
 
-	$rows = array();
+	$sql = "REPLACE INTO " . WOW_ITEMS_TABLE . " (item_id,item_name,item_quality,item_icon,item_desc)
+	        VALUES ";
 
 	// Any kind of failure in this loop causes a continue instead of an abort;
 	// no need to throw it all away because one item is bad.
@@ -129,13 +130,7 @@
 		if (!preg_match('#<quality>(.+?)</quality>#', $xml, $match)) continue;
 		$quality = intval($match[1]);
 
-		$rows[] = "($id,'"  . str_replace("'", "''", $name) . "',$quality,'" . str_replace("'", "''", $icon) . "','" . str_replace("'", "''", wow_item_clean($desc)) . "')";
-	}
-
-	if (count($rows) > 0) {
-		$sql = "REPLACE INTO " . WOW_ITEMS_TABLE . " (item_id,item_name,item_quality,item_icon,item_desc)
-		        VALUES " . implode(",", $rows);
-
-		if (!$db->sql_query($sql)) die_text($db->sql_error(), __LINE__);
+		$row = "($id,'"  . str_replace("'", "''", $name) . "',$quality,'" . str_replace("'", "''", $icon) . "','" . str_replace("'", "''", wow_item_clean($desc)) . "')";
+		$db->sql_query($sql . $row);
 	}
 ?>
