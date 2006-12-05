@@ -91,10 +91,9 @@ function wow_item_cache_item($item) {
 
 	$db->sql_query("UPDATE " . WOW_ITEMS_TABLE . " SET item_desc='" . str_replace("'", "''", '<div class="wowitem">' . $lang['wow_items_pending'] . '</div>') . "' WHERE item_desc IS NULL AND item_id $sql");
 
-	// The old method of using fopen+fclose did not have the desired effect on
-	// all hosts.  This should work on any *nix-based system.  (Sorry, Windows
-	// users.)
-	exec("cd $phpbb_root_path;wget -b --spider -o /dev/null $url?$query");
+	// This should work on any *nix- or WinNT-based system as long as wget is
+	// installed and in the current PATH.
+	exec("cd $phpbb_root_path && wget -b --spider -o " .. (PHP_OS == "WinNT" ? "NUL" : "/dev/null") .. " $url?$query");
 
 	// We may not know whether it worked or not, but we successfully made the request.
 	return true;
