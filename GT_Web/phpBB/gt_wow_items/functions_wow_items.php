@@ -93,7 +93,7 @@ function wow_item_cache_item($item) {
 
 	// This should work on any *nix- or WinNT-based system as long as wget is
 	// installed and in the current PATH.
-	exec("cd $phpbb_root_path && wget -b --spider -o " .. (PHP_OS == "WinNT" ? "NUL" : "/dev/null") .. " $url?$query");
+	exec("cd $phpbb_root_path && wget -b --spider -o " . (PHP_OS == "WinNT" ? "NUL" : "/dev/null") . " $url?$query");
 
 	// We may not know whether it worked or not, but we successfully made the request.
 	return true;
