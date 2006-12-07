@@ -74,7 +74,7 @@ function wow_item_get_info($itemnum) {
 	if (!is_numeric($itemnum)) return false;
 	if (!($result = $db->sql_query("SELECT * FROM " . WOW_ITEMS_TABLE . " WHERE item_id = " . intval($itemnum)))) return false;
 	if (!($result = $db->sql_fetchrow($result))) return false;
-	if (!$result['item_desc']) $result['item_desc'] = $lang['wow_items_pending'];
+	if (!$result['item_desc']) $result['item_desc'] = str_replace("{ITEMDESC}", $lang['wow_items_pending'], $bbcode_tpl['wowitem']);
 	return $result;
 }
 
@@ -135,19 +135,19 @@ function wow_item_bbcode_second_pass_callback($match) {
 		$quality = 2;
 		$itemdesc = str_replace(array("{SEARCH}", "{COUNT}"), array($text, count($search)), $lang['wow_items_multi']) . "<br />";
 		foreach ($search as $v) $itemdesc .= "<br />[item]{$v}[/item] (item $v)";
-		$itemdesc = '<div class="wowitem">' . wow_item_bbcode_second_pass($itemdesc) . '</div>';
+		$itemdesc = str_replace("{ITEMDESC}", wow_item_bbcode_second_pass($itemdesc), $bbcode_tpl['wowitem']);
 	} else if ($id) {
 		// An item ID was found, but it did not return data.
 		$text = $match[3];
 		$url = "http://wow.allakhazam.com/search.html?q=" . urlencode($text);
 		$quality = 99;
-		$itemdesc = str_replace("{ID}", $id, $lang['wow_items_badid']);
+		$itemdesc = str_replace("{ITEMDESC}", str_replace("{ID}", $id, $lang['wow_items_badid']), $bbcode_tpl['wowitem']);
 	} else {
 		$text = $match[3];
 		$url = "http://wow.allakhazam.com/search.html?q=" . urlencode($text);
 		$id = md5($text);
 		$quality = 99;
-		$itemdesc = str_replace("{SEARCH}", $text, $lang['wow_items_none']);
+		$itemdesc = str_replace("{ITEMDESC}", str_replace("{SEARCH}", $text, $lang['wow_items_none']), $bbcode_tpl['wowitem']);
 	}
 
 	if (!in_array($id, $wibspcd)) {

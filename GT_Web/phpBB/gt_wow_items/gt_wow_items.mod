@@ -7,18 +7,18 @@
 ## MOD Author: DrDark < N/A > (N/A) http://code.google.com/p/grimtimes/
 ## MOD Description: Adds a new BBcode for producing styled links
 ## to WoW item data, with mouseover tooltips.
-## MOD Version: 0.9
+## MOD Version: 1.0.0
 ##
 ## Installation Level: Easy
 ## Installation Time: 5 Minutes
-## Files To Edit: 5
+## Files To Edit:
 ##     includes/bbcode.php
 ##     language/lang_english/lang_main.php
 ##     templates/subSilver/bbcode.tpl
 ##     templates/subSilver/overall_header.tpl
 ##     templates/subSilver/posting_body.tpl
 ##
-## Included Files: 6
+## Included Files:
 ##     admin_wow_items.php
 ##     admin_wow_items.tpl
 ##     functions_wow_items.php
@@ -78,6 +78,7 @@
 
 CREATE TABLE phpbb_wow_items (
   item_id MEDIUMINT UNSIGNED NOT NULL,
+  item_stamp INT NOT NULL DEFAULT 0,
   item_name TINYTEXT NOT NULL,
   item_quality TINYINT UNSIGNED NULL,
   item_icon TINYTEXT NULL,
@@ -204,7 +205,7 @@ $lang['bbcode_help']['itemdesc'] = "Item (in-line)";
 
 // WoW Items admin page
 $lang['wow_items_admin'] = 'WoW Items';
-$lang['wow_items_admin_text'] = 'From this page you can perform various options on the WoW item database used for this forum.  The most important is the Update option, which updates the cached list of <a href="http://wow.allakhazam.com/">Allakhazam\'s</a> items and ensures the cached items are up to date.  You may want to do this every few days when a patch has just been released, but probably no more than once a week otherwise.  You can also choose to pre-load commonly used items to ensure they are available when your users need them.  (Non-precached items are loaded on an as-needed basis.)';
+$lang['wow_items_admin_text'] = 'From this page you can perform various options on the WoW item database used for this forum.  The most important is the Update option, which updates the cached list of <a href="http://wow.allakhazam.com/">Allakhazam\'s</a> items.  This is performed automatically once a month, but you may want to do it more frequently after a patch has just been released.  You can also choose to pre-load commonly used items to ensure they are available when your users need them.  (Non-precached items are loaded on an as-needed basis.)';
 $lang['wow_items_admin_title'] = 'WoW Item Database Management';
 $lang['wow_items_cache_available'] = 'items available in <a href="http://wow.allakhazam.com/">Allakhazam\'s</a> database';
 $lang['wow_items_cache_current'] = 'items currently in the local cache';
@@ -217,30 +218,32 @@ $lang['wow_items_precache_set'] = 'Set Name';
 $lang['wow_items_precache_status'] = 'Cached?';
 $lang['wow_items_precache_submit'] = 'Cache Selected Sets';
 
-$lang['wow_items_status_precache'] = 'Item set "{SET}" has been cached.';
-$lang['wow_items_status_update'] = 'Cache update requested.  This operation can take several minutes to complete, depending on how many items you currently have cached.  Until the update completes, item tooltips will display "uncached or invalid".';
+$lang['wow_items_status_precache'] = 'Item set "{SET}" has been cached.  This operation can take several minutes, depending on the size of the set.';
+$lang['wow_items_status_update'] = 'Cache update requested.  This operation typically takes less than a minute to complete..';
 
-$lang['wow_items_set']['pvp_a_ab'] = 'Alliance PvP: League of Arathor faction rewards (AB)';
-$lang['wow_items_set']['pvp_a_av'] = 'Alliance PvP: Stormpike faction rewards (AV)';
-$lang['wow_items_set']['pvp_a_honor'] = 'Alliance PvP: Honor rank rewards';
-$lang['wow_items_set']['pvp_a_wsg'] = 'Alliance PvP: Silverwing faction rewards (WSG)';
-$lang['wow_items_set']['pvp_h_ab'] = 'Horde PvP: Defilers faction rewards (AB)';
-$lang['wow_items_set']['pvp_h_av'] = 'Horde PvP: Frostwolf faction rewards (AV)';
-$lang['wow_items_set']['pvp_h_honor'] = 'Horde PvP: Honor rank rewards';
-$lang['wow_items_set']['pvp_h_wsg'] = 'Horde PvP: Warsong faction rewards (WSG)';
-$lang['wow_items_set']['tier0'] = 'Tier 0 (a.k.a. Dungeon Set 1)';
-$lang['wow_items_set']['tier0_5'] = 'Tier 0.5 (a.k.a. Dungeon Set 2)';
-$lang['wow_items_set']['tier1'] = 'Tier 1';
-$lang['wow_items_set']['tier2'] = 'Tier 2';
-$lang['wow_items_set']['tier3'] = 'Tier 3';
+$lang['wow_items_set']['mc'] = 'Molten Core (does not include Tier 1)';
+$lang['wow_items_set']['ony'] = 'Onyxia (does not include Tier 2 helms)';
+$lang['wow_items_set']['pvp_a'] = 'Alliance PvP rewards';
+$lang['wow_items_set']['pvp_a_ab'] = 'Alliance PvP rewards, League of Arathor (AB)';
+$lang['wow_items_set']['pvp_a_av'] = 'Alliance PvP rewards, Stormpike Guard (AV)';
+$lang['wow_items_set']['pvp_a_wsg'] = 'Alliance PvP rewards, Silverwing Sentinels (WSG)';
+$lang['wow_items_set']['pvp_h'] = 'Horde PvP rewards';
+$lang['wow_items_set']['pvp_h_ab'] = 'Horde PvP rewards, Defilers (AB)';
+$lang['wow_items_set']['pvp_h_av'] = 'Horde PvP rewards, Frostwolf Clan (AV)';
+$lang['wow_items_set']['pvp_h_wsg'] = 'Horde PvP rewareds, Warsong Outriders (WSG)';
+$lang['wow_items_set']['tier0'] = 'Dungeon Set 1 (a.k.a. Tier 0)';
+$lang['wow_items_set']['tier0_5'] = 'Dungeon Set 2 (a.k.a. Tier 0.5)';
+$lang['wow_items_set']['tier1'] = 'Raid Tier 1';
+$lang['wow_items_set']['tier2'] = 'Raid Tier 2';
+$lang['wow_items_set']['tier3'] = 'Raid Tier 3';
 $lang['wow_items_set']['zg_loot'] = 'Zul\'Gurub loot';
 $lang['wow_items_set']['zg_quest'] = 'Zul\'Gurub quest rewards';
 
 // WoW Items display
-$lang['wow_items_badid'] = '<div class="wowitem">There does not appear to be an item with ID {ID}.</div>';
+$lang['wow_items_badid'] = 'There does not appear to be an item with ID {ID}.';
 $lang['wow_items_multi'] = 'The search "{SEARCH}" matched {COUNT} items:';
-$lang['wow_items_none'] = '<div class="wowitem">The search "{SEARCH}" did not match any items.</div>';
-$lang['wow_items_pending'] = '<div class="wowitem">This item has not yet been cached.  It is possible that Allakhazam is down or that the item ID is invalid.  Please try again later.</div>';
+$lang['wow_items_none'] = 'The search "{SEARCH}" did not match any items.';
+$lang['wow_items_pending'] = 'This item has not yet been cached.  It is possible that Allakhazam is down or that the item ID is invalid.  Please try again later.';
 
 #
 #-----[ OPEN ]------------------------------------------
@@ -265,6 +268,8 @@ templates/subSilver/bbcode.tpl
 <!-- BEGIN itemdesc --></span>
 <div{IDATTR}>{ITEMDESC}</div>
 <span class="postbody"><!-- END itemdesc -->
+
+<!-- BEGIN wowitem --><div class="wowitem">{ITEMDESC}</div><!-- END wowitem -->
 
 #
 #-----[ OPEN ]---------------------------------
@@ -317,7 +322,7 @@ Before item links can be used, you must:
 Open the new "WoW Items" ACP
 Click the "Update Cache" button
 Wait for the cache to be filled (usually takes about 10 seconds, but you won't be told when it's done)
-If you like, select item sets to preload (loading too many makes recaching take longer, so don't go nuts)
+If you like, select item sets to preload
 
 #
 #-----[ SAVE/CLOSE ALL FILES ]------------------------------------------
