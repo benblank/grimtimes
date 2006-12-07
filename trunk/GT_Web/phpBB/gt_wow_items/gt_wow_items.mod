@@ -237,10 +237,10 @@ $lang['wow_items_set']['zg_loot'] = 'Zul\'Gurub loot';
 $lang['wow_items_set']['zg_quest'] = 'Zul\'Gurub quest rewards';
 
 // WoW Items display
-$lang['wow_items_badid'] = 'There does not appear to be an item with ID {ID}.';
+$lang['wow_items_badid'] = '<div class="wowitem">There does not appear to be an item with ID {ID}.</div>';
 $lang['wow_items_multi'] = 'The search "{SEARCH}" matched {COUNT} items:';
-$lang['wow_items_none'] = 'The search "{SEARCH}" did not match any items.';
-$lang['wow_items_pending'] = 'This item has not yet been cached.  It is possible that Allakhazam is down or that the item ID is invalid.  Please try again later.';
+$lang['wow_items_none'] = '<div class="wowitem">The search "{SEARCH}" did not match any items.</div>';
+$lang['wow_items_pending'] = '<div class="wowitem">This item has not yet been cached.  It is possible that Allakhazam is down or that the item ID is invalid.  Please try again later.</div>';
 
 #
 #-----[ OPEN ]------------------------------------------

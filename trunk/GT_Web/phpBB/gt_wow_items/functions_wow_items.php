@@ -6,35 +6,6 @@ if (!defined('IN_PHPBB')) {
 
 define('WOW_ITEMS_TABLE', $table_prefix.'wow_items');
 
-function wow_item_clean($html) {
-	static $wow_item_clean;
-
-	if (!isset($wow_item_clean)) {
-		$wow_item_clean['#&lt;#'] = '<';
-		$wow_item_clean['#&gt;#'] = '>';
-		$wow_item_clean['#&quot;#'] = '"';
-		$wow_item_clean['#&amp;#'] = '&';
-		$wow_item_clean['#&nbsp;#'] = ' ';
-		$wow_item_clean['#\s*(?:&nbsp;)*\s*<br\s*/>\s*(?:&nbsp;)*\s*#'] = '<br />';
-		$wow_item_clean['#[\r\n]+#'] = '';
-		$wow_item_clean['#<span class="iname"><span class="([^"]+)">(.+?)</span>(.*?)</span>#'] = '<span class="itemname \1">\2\3</span>';
-		$wow_item_clean['#gr[ae]yname#'] = 'quality0';
-		$wow_item_clean['#whitename#'] = 'quality1';
-		$wow_item_clean['#greenname#'] = 'quality2';
-		$wow_item_clean['#bluename#'] = 'quality3';
-		$wow_item_clean['#purplename#'] = 'quality4';
-		$wow_item_clean['#orangename#'] = 'quality5';
-		$wow_item_clean['#redname#'] = 'quality6';
-		$wow_item_clean['#wowrttxt#'] = 'right';
-		$wow_item_clean['#(<span class="itemeffect)link#'] = '\1';
-		$wow_item_clean['#(<a[^>]*) class="itemeffectlink"#'] = '\1';
-		$wow_item_clean['#(<a[^>]*)><span class="goldtext">(.+)</span></a>#'] = '\1 class="itemdesc">\2</a>';
-		$wow_item_clean['#goldtext#'] = 'itemdesc';
-	}
-
-	return preg_replace(array_keys($wow_item_clean), array_values($wow_item_clean), $html);
-}
-
 function wow_item_search($search, $with_desc = true) {
 	global $db;
 
@@ -89,8 +60,6 @@ function wow_item_cache_item($item) {
 		$sql = "= " . intval($item);
 	} else return false;
 
-	$db->sql_query("UPDATE " . WOW_ITEMS_TABLE . " SET item_desc='" . str_replace("'", "''", '<div class="wowitem">' . $lang['wow_items_pending'] . '</div>') . "' WHERE item_desc IS NULL AND item_id $sql");
-
 	// This should work on any *nix- or WinNT-based system as long as wget is
 	// installed and in the current PATH.
 	exec("cd $phpbb_root_path && wget -b --spider -o " . (PHP_OS == "WinNT" ? "NUL" : "/dev/null") . " $url?$query");
@@ -105,6 +74,7 @@ function wow_item_get_info($itemnum) {
 	if (!is_numeric($itemnum)) return false;
 	if (!($result = $db->sql_query("SELECT * FROM " . WOW_ITEMS_TABLE . " WHERE item_id = " . intval($itemnum)))) return false;
 	if (!($result = $db->sql_fetchrow($result))) return false;
+	if (!$result['item_desc']) $result['item_desc'] = $lang['wow_items_pending'];
 	return $result;
 }
 
@@ -153,7 +123,7 @@ function wow_item_bbcode_second_pass_callback($match) {
 
 	if ($id && ($info = wow_item_get_info($id))) {
 		$url = "http://wow.allakhazam.com/db/item.html?witem=$id";
-		$itemdesc = $info['item_desc'] ? $info['item_desc'] : ('<div class="wowitem">' . $lang['wow_items_pending'] . '</div>');
+		$itemdesc = $info['item_desc'];
 		$quality = $info['item_quality'] ? $info['item_quality'] : 99;
 		if (false !== strstr($match[3], "(")) $text = $info['item_name'] . ' ' . preg_replace('/^.*(\([^\(\)]+\))/', '\1', $match[3]);
 		else if ($match[2]) $text = $match[3];
@@ -171,13 +141,13 @@ function wow_item_bbcode_second_pass_callback($match) {
 		$text = $match[3];
 		$url = "http://wow.allakhazam.com/search.html?q=" . urlencode($text);
 		$quality = 99;
-		$itemdesc = '<div class="wowitem">' . str_replace("{ID}", $id, $lang['wow_items_badid']) . '</div>';
+		$itemdesc = str_replace("{ID}", $id, $lang['wow_items_badid']);
 	} else {
 		$text = $match[3];
 		$url = "http://wow.allakhazam.com/search.html?q=" . urlencode($text);
 		$id = md5($text);
 		$quality = 99;
-		$itemdesc = '<div class="wowitem">' . str_replace("{SEARCH}", $text, $lang['wow_items_none']) . '</div>';
+		$itemdesc = str_replace("{SEARCH}", $text, $lang['wow_items_none']);
 	}
 
 	if (!in_array($id, $wibspcd)) {
