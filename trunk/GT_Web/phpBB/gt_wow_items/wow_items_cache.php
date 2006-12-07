@@ -4,6 +4,11 @@
 	// la functions_wow_items.php), the local and remote addresses are the same.
 	if ($_SERVER['SERVER_ADDR'] != $_SERVER['REMOTE_ADDR']) die("Hacking attempt!");
 
+	if (is_writable("wow_items_cache.log")) {
+		$log = true;
+		ob_start();
+	}
+
 	define('IN_PHPBB', true);
 
 	// Prevent caching from being interrupted by silly little things like
@@ -55,9 +60,15 @@
 
 	function die_text($msg, $line) {
 		// "Magic" database errors.
-		if (gettype($msg) == "array") $msg = "Database error {$msg['code']}: \"{$msg['message']}\"";
-		else if (gettype($msg) != "string") $msg = "Error";
-		else $msg = "Error \"$msg\"";
+		if (gettype($msg) == "array") $msg = "\n\nDatabase error {$msg['code']}: \"{$msg['message']}\"";
+		else if (gettype($msg) != "string") $msg = "\n\nUnspecified error";
+		else $msg = "\n\nError \"$msg\"";
+
+		if ($log) {
+			$log = fopen("wow_items_cache.log", "w");
+			fwrite($log, ob_get_clean() . $msg);
+			fclose($log);
+		}
 
 		die($msg . " on line " . $line);
 	}
@@ -179,5 +190,11 @@
 		        VALUES " . implode(",", $rows);
 
 		if (!$db->sql_query($sql)) die_text($db->sql_error(), __LINE__);
+	}
+
+	if ($log) {
+		$log = fopen("wow_items_cache.log", "w");
+		fwrite($log, ob_get_clean() . $msg);
+		fclose($log);
 	}
 ?>
