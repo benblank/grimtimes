@@ -566,7 +566,7 @@ includes/usercp_register.php
 
 	$wow_race = isset($HTTP_POST_VARS['wow_race']) ? trim(strip_tags($HTTP_POST_VARS['wow_race'])) : '';
 	$wow_gender = isset($HTTP_POST_VARS['wow_gender']) ? trim(strip_tags($HTTP_POST_VARS['wow_gender'])) : '';
-	$wow_class = usset($HTTP_POST_VARS['wow_class']) ? trim(strip_tags($HTTP_POST_VARS['wow_class'])) : '';
+	$wow_class = isset($HTTP_POST_VARS['wow_class']) ? trim(strip_tags($HTTP_POST_VARS['wow_class'])) : '';
 	$wow_pvp_rank = isset($HTTP_POST_VARS['wow_pvp_rank']) ? intval(trim(strip_tags($HTTP_POST_VARS['wow_pvp_rank']))) : 0;
 	$wow_profile_service = isset($HTTP_POST_VARS['wow_profile_service']) ? trim(strip_tags($HTTP_POST_VARS['wow_profile_service'])) : '';
 	$wow_profile_name = isset($HTTP_POST_VARS['wow_profile_name']) ? trim(strip_tags($HTTP_POST_VARS['wow_profile_name'])) : '';
@@ -918,8 +918,6 @@ templates/subSilver/profile_add_body.tpl
 {S_WOW_TALENTS_SCRIPT}
 </script>
 
-<form action="{S_PROFILE_ACTION}"
-
 #
 #-----[ IN-LINE FIND ]---------------------------------------------------
 #
@@ -1002,8 +1000,6 @@ templates/subSilver/admin/user_edit_body.tpl
 <script type="text/javascript">
 {S_WOW_TALENTS_SCRIPT}
 </script>
-
-<form action="{S_PROFILE_ACTION}"
 
 #
 #-----[ IN-LINE FIND ]---------------------------------------------------
