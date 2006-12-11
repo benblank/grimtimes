@@ -19,15 +19,19 @@
 ##     includes/usercp_register.php
 ##     includes/usercp_viewprofile.php
 ##     language/lang_english/lang_main.php
+##     memberlist.php
 ##     templates/subSilver/admin/user_edit_body.tpl
+##     templates/subSilver/memberlist_body.tpl
 ##     templates/subSilver/profile_add_body.tpl
 ##     templates/subSilver/profile_view_body.tpl
 ##     templates/subSilver/viewtopic_body.tpl
+##     profile.php
 ##     viewtopic.php
 ##
 ## Included Files:
 ##     images/*.gif => images/gt_wow_profiles/*.gif
 ##     images/rankgif.php => images/gt_wow_profiles/rankgif.php
+##     includes/functions_wow_profiles.php
 ##
 ## License: http://opensource.org/licenses/bsd-license.php The BSD License
 ##
@@ -75,116 +79,8 @@ ALTER TABLE phpbb_users ADD user_wow_pvp_rank TINYINT UNSIGNED DEFAULT 0 NOT NUL
 #
 
 copy images/*.gif to images/gt_wow_profiles/*.gif
-copy images/rankgif.php to images/gt_wow_profiles/rankgif.php
-
-#
-#-----[ OPEN ]------------------------------------------
-#
-
-includes/functions.php
-
-#
-#-----[ FIND ]------------------------------------------
-#
-
-?>
-
-#
-#-----[ BEFORE, ADD ]------------------------------------------
-#
-
-function wow_image_race($race, $gender, $service = "", $svcname = "") {
-	global $lang;
-
-	$img = "<img border=\"0\" src=\"images/gt_wow_profiles/$race-$gender.gif\" alt=\"{$lang['wow_gender'][$gender]} {$lang['wow_race'][$race] }\" title=\"{$lang['wow_gender'][$gender]} {$lang['wow_race'][$race]}\"/>";
-	return ($service && $svcname) ? wow_link_service($service, $svcname, $img) : $img;
-}
-
-function wow_image_class($class, $talents = "", $title = "") {
-	global $lang;
-
-	if ($title) $title = " ($title)";
-	else $title = "";
-
-	$img = "<img border=\"0\" src=\"images/gt_wow_profiles/$class.gif\" alt=\"{$lang['wow_class'][$class]}$title \" title=\"{$lang['wow_class'][$class]}$title\"/>";
-	return $talents ? wow_link_talents($class, $talents, $img) : $img;
-}
-
-function wow_image_pvp_rank($rank, $race = "") {
-	global $lang;
-
-	if (!array_key_exists($race, $lang['wow_race_faction'])) $race = "";
-
-	if ($rank) return "<img border=\"0\" src=\"images/gt_wow_profiles/rankgif.php?rank=$rank\" alt=\"{$lang['wow_pvp_rank'][$lang['wow_race_faction'][$race]][$rank]} \" title=\"{$lang['wow_pvp_rank'][$lang['wow_race_faction'][$race]][$rank]}\"/>";
-}
-
-function wow_link_service($service, $name, $text = "Profile") {
-	global $lang;
-
-	if (!array_key_exists($service, $lang['wow_profile_service_url'])) return "";
-
-	return '<a target="_blank" href="' . str_replace("{PROFILE}", $name, $lang['wow_profile_service_url'][$service]) . "\">$text</a>";
-}
-
-function wow_link_talents($class, $talents, $text = "Talents") {
-	global $lang;
-
-	return '<a target="_blank" href="http://www.worldofwarcraft.com/info/classes/' . strtolower($lang['wow_class'][$class]) . "/talents.html?$talents\">$text</a>";
-}
-
-function wow_script_talents() {
-	global $lang;
-
-	$script = <<<WOW_SCRIPT_TALENTS_DECLARE
-//<![CDATA[
-function wow_validate_talents() {
-	if (!document.getElementById) return;
-
-	var talents = document.getElementById("wow_talents");
-	var class = document.getElementById("wow_class");
-	if (!talents || !class || !talents.value) return;
-
-	var urls = new Array();
-WOW_SCRIPT_TALENTS_DECLARE;
-
-	$i = 0;
-	foreach ($lang['wow_talent_service_url'] as $url) {
-		$class = strpos($url, '{CLASS}');
-		$talents = strpos($url, '{TALENTS}');
-
-		$class = ($class < $talents) ? 1 : 2;
-		$talents = ($class == 1) ? 2 : 1;
-
-		$url = str_replace(array('\{CLASS\}', '\{TALENTS\}', '\\'), array('([A-Za-z]+)', '([0-9]+)', '\\\\'), preg_quote($url));
-		$script .= "\n\turls[$i] = new Array(new RegExp('$url'), $class, $talents);";
-		$i++;
-	}
-
-	$script .= <<<WOW_SCRIPT_TALENTS_PROCESS
-
-	var matches;
-	for (var i = 0; i < $i; i++) {
-		matches = urls[i][0](talents.value);
-		if (!matches) continue;
-
-		talents.value = matches[urls[i][2]];
-		var class_val = matches[urls[i][1]].toLowerCase();
-
-		for (var j = 1; j < class.childNodes.length; j++) {
-			if (class.childNodes[j].innerHTML.toLowerCase() == class_val) {
-				class.selectedIndex = j;
-				break;
-			}
-		}
-
-		break;
-	}
-}
-//]]>
-WOW_SCRIPT_TALENTS_PROCESS;
-
-	return $script;
-}
+copy images/rankgif.php to images/gt_wow_profiles/
+copy functions_wow_profiles.php to includes/
 
 #
 #-----[ OPEN ]------------------------------------------
@@ -230,7 +126,37 @@ function wow_select($array, $name, $selected, $default) {
 #-----[ OPEN ]-------------------------------------
 #
 
+profile.php
+
+#
+#-----[ FIND ]-------------------------------------
+#
+
+include($phpbb_root_path . 'common.'.$phpEx);
+
+#
+#-----[ AFTER, ADD ]-------------------------------------
+#
+
+include($phpbb_root_path . 'includes/functions_wow_profiles.'.$phpEx);
+
+#
+#-----[ OPEN ]-------------------------------------
+#
+
 viewtopic.php
+
+#
+#-----[ FIND ]-------------------------------------
+#
+
+include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
+
+#
+#-----[ AFTER, ADD ]-------------------------------------
+#
+
+include($phpbb_root_path . 'includes/functions_wow_profiles.'.$phpEx);
 
 #
 #-----[ FIND ]-------------------------------------
@@ -751,6 +677,18 @@ admin/admin_users.php
 #-----[ FIND ]---------------------------------------------------
 #
 
+require($phpbb_root_path . 'includes/functions_validate.'.$phpEx);
+
+#
+#-----[ AFTER, ADD ]---------------------------------------------------
+#
+
+require($phpbb_root_path . 'includes/functions_wow_profiles.'.$phpEx);
+
+#
+#-----[ FIND ]---------------------------------------------------
+#
+
 		$email = ( !empty($HTTP_POST_VARS
 
 #
@@ -1110,6 +1048,130 @@ $params = array('coppa',
 #-----[ OPEN ]------------------------------------------
 #
 
+memberlist.php
+
+#
+#-----[ FIND ]---------------------------------------------------
+#
+
+include($phpbb_root_path . 'common.'.$phpEx);
+
+#
+#-----[ AFTER, ADD ]---------------------------------------------------
+#
+
+include($phpbb_root_path . 'includes/functions_wow_profiles.'.$phpEx);
+
+#
+#-----[ FIND ]---------------------------------------------------
+#
+
+	'L_EMAIL' => $lang['Email'],
+
+#
+#-----[ AFTER, ADD ]---------------------------------------------------
+#
+
+	'L_WOW' => $lang['wow_label_list'],
+
+#
+#-----[ FIND ]---------------------------------------------------
+#
+
+$sql = "SELECT username, user_id, user_viewemail
+
+#
+#-----[ IN-LINE FIND ]---------------------------------------------------
+#
+
+user_email
+
+#
+#-----[ IN-LINE AFTER, ADD ]---------------------------------------------------
+#
+
+, user_wow_race, user_wow_gender, user_wow_class, user_wow_profile_service, user_wow_profile_name, user_wow_talents, user_wow_talents_title, user_wow_pvp_rank
+
+#
+#-----[ FIND ]---------------------------------------------------
+#
+
+		$temp_url = append_sid("profile.$phpEx?mode=viewprofile
+
+#
+#-----[ BEFORE, ADD ]---------------------------------------------------
+#
+
+		$wow_icon_race = ($row['user_wow_race'] && $row['user_wow_gender']) ? wow_image_race($row['user_wow_race'], $row['user_wow_gender'], $row['user_wow_profile_service'], $row['user_wow_profile_name']) : "";
+		$wow_icon_class = $row['user_wow_class'] ? wow_image_class($row['user_wow_class'], $row['user_wow_talents'], $row['user_wow_talents_title']) : "";
+		$wow_icon_rank = $row['user_wow_pvp_rank'] ? wow_image_pvp_rank($row['user_wow_pvp_rank'], $row['user_wow_race']) : "";
+
+#
+#-----[ FIND ]---------------------------------------------------
+#
+
+			'EMAIL' => $email,
+
+#
+#-----[ AFTER, ADD ]---------------------------------------------------
+#
+
+			'WOW_ICON_RACE' => $wow_icon_race,
+			'WOW_ICON_CLASS' => $wow_icon_class,
+			'WOW_ICON_RANK' => $wow_icon_rank,
+
+#
+#-----[ OPEN ]------------------------------------------
+#
+
+templates/subSilver/memberlist_body.tpl
+
+#
+#-----[ FIND ]---------------------------------------------------
+#
+
+	  <th class="thTop" nowrap="nowrap">{L_USERNAME}</th>
+
+#
+#-----[ BEFORE, ADD ]---------------------------------------------------
+#
+
+	  <th class="thTop" nowrap="nowrap">{L_WOW}</th>
+
+#
+#-----[ FIND ]---------------------------------------------------
+#
+
+	  <td class="{memberrow.ROW_CLASS}" align="center"><span class="gen"><a href="{memberrow.U_VIEWPROFILE}
+
+#
+#-----[ BEFORE, ADD ]---------------------------------------------------
+#
+
+	  <td class="{memberrow.ROW_CLASS}" align="center">&nbsp;{memberrow.WOW_ICON_RACE}{memberrow.WOW_ICON_CLASS}{memberrow.WOW_ICON_RANK}&nbsp;</td>
+
+#
+#-----[ FIND ]---------------------------------------------------
+#
+
+	  <td class="catBottom" colspan="8"
+
+#
+#-----[ IN-LINE FIND ]---------------------------------------------------
+#
+
+colspan="8"
+
+#
+#-----[ IN-LINE AFTER, ADD ]---------------------------------------------------
+#
+
+colspan="9"
+
+#
+#-----[ OPEN ]------------------------------------------
+#
+
 language/lang_english/lang_main.php
 
 #
@@ -1124,13 +1186,14 @@ language/lang_english/lang_main.php
 #-----[ BEFORE, ADD ]----------------------------------------------
 #
 
-$lang['wow_label_race'] = "WoW Race";
-$lang['wow_label_gender'] = "WoW Gender";
 $lang['wow_label_class'] = "WoW Class";
-$lang['wow_label_pvp_rank'] = "WoW PvP Rank";
+$lang['wow_label_gender'] = "WoW Gender";
+$lang['wow_label_list'] = "WoW";
 $lang['wow_label_profile'] = "WoW Profile";
-$lang['wow_label_profile_service'] = "WoW Profile Service";
 $lang['wow_label_profile_name'] = "WoW Profile Name/Number";
+$lang['wow_label_profile_service'] = "WoW Profile Service";
+$lang['wow_label_pvp_rank'] = "WoW PvP Rank";
+$lang['wow_label_race'] = "WoW Race";
 $lang['wow_label_talents'] = "WoW Talents";
 $lang['wow_label_talents_title'] = "WoW Talent Spec Title";
 
