@@ -1163,7 +1163,7 @@ templates/subSilver/memberlist_body.tpl
 colspan="8"
 
 #
-#-----[ IN-LINE AFTER, ADD ]---------------------------------------------------
+#-----[ IN-LINE REPLACE WITH ]---------------------------------------------------
 #
 
 colspan="9"
