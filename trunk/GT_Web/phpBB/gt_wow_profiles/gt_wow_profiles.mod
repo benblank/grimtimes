@@ -766,14 +766,14 @@ require($phpbb_root_path . 'includes/functions_wow_profiles.'.$phpEx);
 #-----[ AFTER, ADD ]----------------------------------------------
 #
 
-		$wow_race = htmlspecialchars($userdata['user_wow_race']);
-		$wow_gender = htmlspecialchars($userdata['user_wow_gender']);
-		$wow_class = htmlspecialchars($userdata['user_wow_class']);
-		$wow_pvp_rank = $userdata['user_wow_pvp_rank'];
-		$wow_profile_service = htmlspecialchars($userdata['user_wow_profile_service']);
-		$wow_profile_name = htmlspecialchars($userdata['user_wow_profile_name']);
-		$wow_talents = $userdata['user_wow_talents'];
-		$wow_talents_title = htmlspecialchars($userdata['user_wow_talents_title']);
+		$wow_race = htmlspecialchars($this_userdata['user_wow_race']);
+		$wow_gender = htmlspecialchars($this_userdata['user_wow_gender']);
+		$wow_class = htmlspecialchars($this_userdata['user_wow_class']);
+		$wow_pvp_rank = $this_userdata['user_wow_pvp_rank'];
+		$wow_profile_service = htmlspecialchars($this_userdata['user_wow_profile_service']);
+		$wow_profile_name = htmlspecialchars($this_userdata['user_wow_profile_name']);
+		$wow_talents = $this_userdata['user_wow_talents'];
+		$wow_talents_title = htmlspecialchars($this_userdata['user_wow_talents_title']);
 
 #
 #-----[ FIND ]---------------------------------------------------
