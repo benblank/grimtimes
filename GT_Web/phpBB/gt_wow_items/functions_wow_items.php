@@ -124,7 +124,7 @@ function wow_item_bbcode_second_pass_callback($match) {
 	if ($id && ($info = wow_item_get_info($id))) {
 		$url = "http://wow.allakhazam.com/db/item.html?witem=$id";
 		$itemdesc = $info['item_desc'];
-		$quality = $info['item_quality'] ? $info['item_quality'] : 99;
+		$quality = is_numeric($info['item_quality']) && ($info['item_quality'] >= 0) && ($info['item_quality'] <= 6) ? $info['item_quality'] : 99;
 		if (false !== strstr($match[3], "(")) $text = $info['item_name'] . ' ' . preg_replace('/^.*(\([^\(\)]+\))/', '\1', $match[3]);
 		else if ($match[2]) $text = $match[3];
 		else $text = $info['item_name'];

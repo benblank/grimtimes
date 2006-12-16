@@ -7,7 +7,7 @@
 ## MOD Author: DrDark < N/A > (N/A) http://code.google.com/p/grimtimes/
 ## MOD Description: Adds a new BBcode for producing styled links
 ## to WoW item data, with mouseover tooltips.
-## MOD Version: 1.0.0
+## MOD Version: 1.0.1
 ##
 ## Installation Level: Easy
 ## Installation Time: 5 Minutes
