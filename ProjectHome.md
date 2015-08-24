@@ -1,0 +1,1 @@
+This suite targeted pre-BC WoW and an aging version of phpBB2.  As such, this project has been abandoned rather than make any attempt at migrating it.  Certain features, however, may at some point find their way into [this project's successor](http://code.google.com/p/wow-535games/).
